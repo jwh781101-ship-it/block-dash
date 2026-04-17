@@ -1,0 +1,1810 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>Block Dash</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; user-select: none; -webkit-tap-highlight-color: transparent; }
+  html, body { width: 100%; height: 100%; overflow: hidden; background: #1a0a3e; font-family: 'Trebuchet MS', 'Segoe UI', sans-serif; }
+  #game { position: fixed; inset: 0; }
+  canvas { display: block; width: 100%; height: 100%; touch-action: none; }
+  .ui { position: absolute; pointer-events: none; z-index: 10; }
+
+  #loading {
+    position: absolute; inset: 0; z-index: 100;
+    display: flex; align-items: center; justify-content: center;
+    background: #1a0a3e; color: #ffd54a;
+    font-size: 18px; font-weight: 700; letter-spacing: 3px;
+  }
+  #loading.error { color: #ff6a6a; font-size: 14px; padding: 20px; text-align: center; white-space: pre-wrap; }
+
+  #hud { top: 0; left: 0; right: 0; padding: 12px 14px; display: flex; justify-content: space-between; align-items: flex-start; }
+  .left-hud { display: flex; flex-direction: column; gap: 6px; }
+  .top-row { display: flex; align-items: center; gap: 6px; }
+  .coin-box {
+    background: #1a1420;
+    border: 3px solid #ffd54a;
+    border-radius: 8px;
+    padding: 5px 12px 5px 6px;
+    display: flex; align-items: center; gap: 6px;
+    color: #fff; font-weight: 900; font-size: 16px;
+    box-shadow: 3px 3px 0 rgba(0,0,0,0.5);
+    min-width: 78px;
+  }
+  .gold-bar-icon {
+    width: 20px; height: 12px;
+    background: #ffd54a;
+    box-shadow: inset 0 -2px 0 #c67a00, inset 0 2px 0 #fff5a0;
+  }
+  .multi-box {
+    background: #7fff3f;
+    border: 3px solid #1a6a00;
+    border-radius: 6px;
+    padding: 2px 8px;
+    color: #1a3a00; font-weight: 900; font-size: 16px;
+    text-shadow: 1px 1px 0 rgba(255,255,255,0.5);
+    box-shadow: 3px 3px 0 rgba(0,0,0,0.4);
+  }
+  .multi-box.bump { animation: bump 0.3s; }
+  @keyframes bump { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.3); } }
+  .score {
+    color: #fff; font-weight: 900; font-size: 18px;
+    text-shadow: 2px 2px 0 #000;
+    letter-spacing: 1px;
+  }
+  .stage-box {
+    background: #2a1a5e;
+    border: 2px solid #fff;
+    border-radius: 6px;
+    padding: 3px 10px;
+    color: #fff; font-weight: 900; font-size: 12px;
+    letter-spacing: 1px;
+    text-shadow: 1px 1px 0 #000;
+    box-shadow: 2px 2px 0 rgba(0,0,0,0.5);
+  }
+  .distance-text {
+    color: #ffd54a; font-size: 12px; font-weight: 700;
+    text-shadow: 1px 1px 0 #000;
+    letter-spacing: 1px;
+  }
+  .pause-btn {
+    width: 40px; height: 40px; border-radius: 6px;
+    background: #ff8c1a;
+    border: 3px solid #fff;
+    display: flex; align-items: center; justify-content: center;
+    color: #fff; font-weight: 900; font-size: 14px;
+    box-shadow: 3px 3px 0 rgba(0,0,0,0.4);
+    pointer-events: auto; cursor: pointer;
+  }
+
+  /* 미션 박스 (HUD 하단) */
+  .mission-box {
+    margin-top: 4px;
+    background: rgba(26, 10, 62, 0.85);
+    border: 2px solid #a88ce0;
+    border-radius: 6px;
+    padding: 4px 10px;
+    color: #fff; font-size: 11px;
+    max-width: 200px;
+    box-shadow: 2px 2px 0 rgba(0,0,0,0.5);
+  }
+  .mission-title {
+    color: #a88ce0; font-weight: 900; font-size: 9px;
+    letter-spacing: 1.5px; margin-bottom: 2px;
+  }
+  .mission-text {
+    font-weight: 700; letter-spacing: 0.5px;
+    text-shadow: 1px 1px 0 #000;
+  }
+  .mission-progress {
+    margin-top: 3px;
+    height: 6px; background: #2a1a4a;
+    border-radius: 3px; overflow: hidden;
+    position: relative;
+  }
+  .mission-progress-fill {
+    height: 100%; background: linear-gradient(90deg, #7fff3f, #c0ff70);
+    transition: width 0.3s;
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.4);
+  }
+
+  /* 파워업 인디케이터 */
+  .powerup-bar {
+    position: absolute;
+    top: 60px; right: 14px;
+    display: flex; flex-direction: column; gap: 6px;
+    z-index: 10;
+  }
+  .powerup-icon {
+    width: 44px; height: 44px; border-radius: 8px;
+    background: #1a0a3e;
+    border: 3px solid #fff;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 22px;
+    position: relative;
+    box-shadow: 3px 3px 0 rgba(0,0,0,0.5);
+  }
+  .powerup-icon.magnet { border-color: #ff5a5a; }
+  .powerup-icon.shield { border-color: #4acfff; }
+  .powerup-icon.boost { border-color: #ffd54a; }
+  .powerup-icon.x2 { border-color: #7fff3f; }
+  .powerup-timer {
+    position: absolute;
+    bottom: -2px; left: 0; right: 0;
+    height: 4px; background: #fff;
+    border-radius: 0 0 4px 4px;
+    transform-origin: left;
+  }
+
+  /* 스테이지 전환 배너 */
+  #stage-banner {
+    position: absolute;
+    top: 40%; left: 0; right: 0;
+    text-align: center;
+    z-index: 30;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.3s;
+  }
+  #stage-banner.show { opacity: 1; animation: stageIn 0.6s ease-out; }
+  @keyframes stageIn {
+    0% { transform: translateY(-50px); opacity: 0; }
+    100% { transform: translateY(0); opacity: 1; }
+  }
+  .stage-banner-inner {
+    display: inline-block;
+    background: rgba(26, 10, 62, 0.9);
+    border: 4px solid #ffd54a;
+    border-radius: 12px;
+    padding: 20px 40px;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.6);
+  }
+  .stage-banner-label {
+    color: #ffd54a; font-size: 14px; font-weight: 900;
+    letter-spacing: 4px;
+    text-shadow: 2px 2px 0 #000;
+  }
+  .stage-banner-name {
+    color: #fff; font-size: 28px; font-weight: 900;
+    letter-spacing: 3px; margin-top: 4px;
+    text-shadow: 3px 3px 0 #000;
+    font-family: 'Courier New', monospace;
+  }
+
+  /* 미션 완료 팝업 */
+  #mission-complete {
+    position: absolute;
+    top: 25%; left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 30;
+    pointer-events: none;
+    opacity: 0;
+  }
+  #mission-complete.show { animation: missionComplete 2s ease-out; }
+  @keyframes missionComplete {
+    0% { opacity: 0; transform: translate(-50%, -80%) scale(0.5); }
+    20% { opacity: 1; transform: translate(-50%, -50%) scale(1.1); }
+    30% { transform: translate(-50%, -50%) scale(1); }
+    80% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+    100% { opacity: 0; transform: translate(-50%, -80%) scale(0.9); }
+  }
+  .mission-complete-inner {
+    background: #2a9a00;
+    border: 4px solid #7fff3f;
+    border-radius: 12px;
+    padding: 14px 30px;
+    color: #fff;
+    text-align: center;
+    box-shadow: 6px 6px 0 rgba(0,0,0,0.5);
+  }
+  .mission-complete-inner .label {
+    font-size: 11px; letter-spacing: 3px; opacity: 0.9;
+  }
+  .mission-complete-inner .name {
+    font-size: 18px; font-weight: 900; margin: 4px 0;
+    text-shadow: 2px 2px 0 #1a5a00;
+  }
+  .mission-complete-inner .reward {
+    font-size: 14px; color: #ffd54a;
+    font-weight: 900; text-shadow: 2px 2px 0 #000;
+  }
+
+  /* 시작 화면 */
+  #start-screen {
+    position: absolute; inset: 0; z-index: 20;
+    background: linear-gradient(180deg, #4a8adc 0%, #1a3a7a 100%);
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    color: #fff; padding: 20px;
+    overflow: hidden;
+  }
+  #start-screen.hidden { display: none; }
+  #start-screen::before {
+    content: '';
+    position: absolute; inset: 0;
+    background-image:
+      linear-gradient(45deg, rgba(255,255,255,0.05) 25%, transparent 25%),
+      linear-gradient(-45deg, rgba(255,255,255,0.05) 25%, transparent 25%);
+    background-size: 40px 40px;
+  }
+  #start-screen h1 {
+    font-size: clamp(44px, 11vw, 78px); font-weight: 900;
+    color: #ffd54a;
+    letter-spacing: 3px; margin-bottom: 4px;
+    text-shadow: 4px 4px 0 #8b3a00, 8px 8px 0 rgba(0,0,0,0.3);
+    position: relative; z-index: 1;
+    font-family: 'Courier New', 'Trebuchet MS', monospace;
+  }
+  #start-screen .sub {
+    color: #fff; font-size: 13px; margin-bottom: 28px; letter-spacing: 4px;
+    text-shadow: 2px 2px 0 #000;
+    position: relative; z-index: 1;
+  }
+  .char-select { display: flex; gap: 12px; margin-bottom: 22px; position: relative; z-index: 1; }
+  .char-card {
+    width: 82px; height: 100px;
+    background: rgba(0,0,0,0.3);
+    border: 3px solid #fff;
+    border-radius: 8px;
+    display: flex; flex-direction: column; align-items: center; justify-content: flex-end;
+    padding-bottom: 8px; cursor: pointer;
+    transition: transform 0.15s;
+    box-shadow: 4px 4px 0 rgba(0,0,0,0.4);
+  }
+  .char-card .preview {
+    flex: 1; width: 100%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 38px;
+    filter: drop-shadow(0 3px 0 rgba(0,0,0,0.4));
+  }
+  .char-card .name {
+    color: #fff; font-weight: 900; font-size: 10px; letter-spacing: 2px;
+    text-shadow: 1px 1px 0 #000;
+  }
+  .char-card.selected {
+    border-color: #ffd54a;
+    background: #ff8c1a;
+    transform: translateY(-6px);
+    box-shadow: 6px 10px 0 rgba(0,0,0,0.4);
+  }
+  .play-btn {
+    padding: 14px 50px;
+    background: #ffd54a;
+    border: 4px solid #fff;
+    border-radius: 12px;
+    color: #8b3a00; font-weight: 900; font-size: 20px;
+    letter-spacing: 4px; cursor: pointer;
+    box-shadow: 6px 6px 0 #8b3a00;
+    text-shadow: 2px 2px 0 rgba(255,255,255,0.5);
+    font-family: 'Courier New', monospace;
+    position: relative; z-index: 1;
+  }
+  .play-btn:active { transform: translate(3px, 3px); box-shadow: 3px 3px 0 #8b3a00; }
+
+  /* 게임 설명 */
+  .info-panel {
+    margin-top: 20px;
+    display: flex;
+    gap: 16px;
+    color: #fff;
+    font-size: 10px;
+    text-shadow: 1px 1px 0 #000;
+    position: relative; z-index: 1;
+    letter-spacing: 1px;
+  }
+  .info-item {
+    display: flex; flex-direction: column; align-items: center;
+    padding: 6px 10px;
+    background: rgba(0,0,0,0.3);
+    border-radius: 6px;
+    min-width: 60px;
+  }
+  .info-emoji { font-size: 18px; margin-bottom: 2px; }
+
+  .hint {
+    position: absolute; bottom: 14px; left: 0; right: 0;
+    text-align: center; color: rgba(255,255,255,0.7); font-size: 10px; letter-spacing: 2px;
+    z-index: 1;
+  }
+
+  /* 게임오버 */
+  #gameover {
+    position: absolute; inset: 0; z-index: 20;
+    background: rgba(0,0,0,0.85);
+    display: none;
+    align-items: center; justify-content: center;
+    flex-direction: column; color: #fff;
+    padding: 20px;
+  }
+  #gameover.show { display: flex; }
+  #gameover .panel {
+    background: #2a1a5e;
+    border: 4px solid #ffd54a;
+    border-radius: 12px;
+    padding: 24px 32px;
+    text-align: center;
+    box-shadow: 8px 8px 0 #000;
+    max-width: 320px;
+  }
+  #gameover h2 {
+    font-size: 32px; font-weight: 900;
+    color: #ff6a6a;
+    margin-bottom: 14px; letter-spacing: 3px;
+    text-shadow: 3px 3px 0 #4a0a0a;
+    font-family: 'Courier New', monospace;
+  }
+  .stat { font-size: 12px; color: #bba3ff; margin: 8px 0; letter-spacing: 2px; }
+  .stat b { color: #ffd54a; font-size: 22px; display: block; margin-top: 2px; text-shadow: 2px 2px 0 #000; }
+  .best-label { color: #7fff3f; font-size: 10px; font-weight: 900; margin-top: 2px; letter-spacing: 2px; }
+  .retry-btn {
+    margin-top: 18px; padding: 10px 32px;
+    background: #7fff3f;
+    border: 3px solid #fff;
+    border-radius: 8px;
+    color: #1a3a00; font-weight: 900; font-size: 15px;
+    letter-spacing: 2px; cursor: pointer;
+    box-shadow: 5px 5px 0 #1a5a00;
+    text-shadow: 1px 1px 0 rgba(255,255,255,0.5);
+    font-family: 'Courier New', monospace;
+  }
+
+  #fx-overlay { position: absolute; inset: 0; pointer-events: none; z-index: 8; }
+  .coin-fx {
+    position: absolute;
+    width: 14px; height: 10px;
+    background: #ffd54a;
+    box-shadow: inset 0 -2px 0 #c67a00, 0 0 8px rgba(255,200,0,0.8);
+  }
+</style>
+</head>
+<body>
+<div id="game">
+  <div id="loading">LOADING...</div>
+
+  <div id="hud" class="ui" style="display:none;">
+    <div class="left-hud">
+      <div class="top-row">
+        <div class="coin-box">
+          <div class="gold-bar-icon"></div>
+          <span id="coin-count">0</span>
+        </div>
+        <div class="multi-box" id="multi-box">×<span id="multi">1</span></div>
+      </div>
+      <div class="top-row">
+        <div class="stage-box">STAGE <span id="stage-num">1</span></div>
+        <div class="score"><span id="score">0</span></div>
+        <div class="distance-text"><span id="distance">0</span>m</div>
+      </div>
+      <div class="mission-box" id="mission-box">
+        <div class="mission-title">MISSION</div>
+        <div class="mission-text" id="mission-text">-</div>
+        <div class="mission-progress">
+          <div class="mission-progress-fill" id="mission-progress" style="width:0%"></div>
+        </div>
+      </div>
+    </div>
+    <div class="pause-btn" id="pause-btn">Ⅱ</div>
+  </div>
+
+  <div class="powerup-bar" id="powerup-bar" style="display:none;"></div>
+
+  <div id="stage-banner" class="ui">
+    <div class="stage-banner-inner">
+      <div class="stage-banner-label">STAGE <span id="banner-num">1</span></div>
+      <div class="stage-banner-name" id="banner-name">GRASSLAND</div>
+    </div>
+  </div>
+
+  <div id="mission-complete">
+    <div class="mission-complete-inner">
+      <div class="label">MISSION CLEAR!</div>
+      <div class="name" id="mc-name">-</div>
+      <div class="reward" id="mc-reward">+500 pts</div>
+    </div>
+  </div>
+
+  <div id="fx-overlay"></div>
+
+  <div id="start-screen" class="hidden">
+    <h1>BLOCK DASH</h1>
+    <div class="sub">★ LOW-POLY RUNNER ★</div>
+    <div class="char-select" id="char-select">
+      <div class="char-card selected" data-char="0">
+        <div class="preview">🐥</div>
+        <div class="name">CHICK</div>
+      </div>
+      <div class="char-card" data-char="1">
+        <div class="preview">🐸</div>
+        <div class="name">FROG</div>
+      </div>
+      <div class="char-card" data-char="2">
+        <div class="preview">🐼</div>
+        <div class="name">PANDA</div>
+      </div>
+    </div>
+    <button class="play-btn" id="play-btn">PLAY</button>
+    <div class="info-panel">
+      <div class="info-item"><div class="info-emoji">🧲</div>MAGNET</div>
+      <div class="info-item"><div class="info-emoji">🛡️</div>SHIELD</div>
+      <div class="info-item"><div class="info-emoji">⚡</div>BOOST</div>
+      <div class="info-item"><div class="info-emoji">✨</div>x2 COINS</div>
+    </div>
+    <div class="hint">← → 이동 · ↑ 점프 · ↓ 슬라이드 · 모바일 스와이프</div>
+  </div>
+
+  <div id="gameover">
+    <div class="panel">
+      <h2>GAME OVER</h2>
+      <div class="stat">SCORE <b id="final-score">0</b><div class="best-label" id="best-label" style="display:none;">NEW BEST!</div></div>
+      <div class="stat">BEST <b id="best-score">0</b></div>
+      <div class="stat">GOLD <b id="final-coins">0</b></div>
+      <div class="stat">DISTANCE <b id="final-dist">0m</b></div>
+      <div class="stat">STAGE REACHED <b id="final-stage">1</b></div>
+      <button class="retry-btn" id="retry-btn">RETRY</button>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+(() => {
+  const loadingEl = document.getElementById('loading');
+
+  window.addEventListener('error', (e) => {
+    loadingEl.classList.add('error');
+    loadingEl.textContent = 'ERROR: ' + e.message + '\n\n' + (e.filename || '') + ':' + (e.lineno || '');
+  });
+
+  if (typeof THREE === 'undefined') {
+    loadingEl.classList.add('error');
+    loadingEl.textContent = 'Three.js 로드 실패';
+    return;
+  }
+
+  try {
+
+  // ============================================
+  // 스테이지 정의 (6개 순환)
+  // ============================================
+  const STAGES = [
+    {
+      name: 'GRASSLAND',
+      sky: 0x6ba8c8,
+      fog: 0x7ab8cc,
+      track: [0x6e5a44, 0x5e4a34],
+      grass: [0x4a7838, 0x3e6a2e],
+      trunk: 0x8a5030,
+      leaves: [0x3a7828, 0x4a8a38, 0x2e6820],
+      mountain: [0x5a4a78, 0x4a3a68],
+      ambient: 0.5, sun: 0.9
+    },
+    {
+      name: 'DESERT',
+      sky: 0xe8b870,
+      fog: 0xdcaa68,
+      track: [0x8a6a3a, 0x7a5a2e],
+      grass: [0xc89060, 0xb87e50],
+      trunk: 0x6a4020,
+      leaves: [0x4a7028, 0x5a8038, 0x3a6020],
+      mountain: [0x8a5830, 0x6a4428],
+      ambient: 0.55, sun: 1.0
+    },
+    {
+      name: 'SNOWFIELD',
+      sky: 0xa8c8e8,
+      fog: 0xccd8e8,
+      track: [0xd4d8e0, 0xbec4d0],
+      grass: [0xeaf0f4, 0xd8dee4],
+      trunk: 0x5a4a38,
+      leaves: [0xe8f4f8, 0xd0dce0, 0xc0ccd0],
+      mountain: [0x8a98b0, 0x6a7890],
+      ambient: 0.6, sun: 1.0
+    },
+    {
+      name: 'JUNGLE',
+      sky: 0x4a7a68,
+      fog: 0x5a8a78,
+      track: [0x5a4828, 0x4a3820],
+      grass: [0x2a6028, 0x1e4e1e],
+      trunk: 0x4a2e18,
+      leaves: [0x1a6828, 0x2a7838, 0x0e5018],
+      mountain: [0x3a5a48, 0x2a4a38],
+      ambient: 0.45, sun: 0.85
+    },
+    {
+      name: 'VOLCANO',
+      sky: 0x8a3828,
+      fog: 0x9a4838,
+      track: [0x3a2820, 0x2a1810],
+      grass: [0x5a2010, 0x4a1808],
+      trunk: 0x2a1408,
+      leaves: [0x6a2818, 0x7a3828, 0x5a1c0e],
+      mountain: [0x5a1818, 0x3a0808],
+      ambient: 0.5, sun: 0.95,
+      emberColor: 0xff6a1a
+    },
+    {
+      name: 'NIGHT CITY',
+      sky: 0x1a1a4a,
+      fog: 0x2a2a5a,
+      track: [0x2a2a3a, 0x1a1a2a],
+      grass: [0x3a3a4a, 0x2a2a3a],
+      trunk: 0x1a1a2a,
+      leaves: [0x3a4a6a, 0x2a3a5a, 0x4a5a7a],
+      mountain: [0x1a2a4a, 0x0a1a3a],
+      ambient: 0.4, sun: 0.7,
+      neonColor: 0xff4a9a
+    }
+  ];
+
+  const STAGE_DISTANCE = 500; // 500m마다 전환
+
+  const scene = new THREE.Scene();
+  let currentStage = 0;
+  scene.background = new THREE.Color(STAGES[0].sky);
+  scene.fog = new THREE.Fog(STAGES[0].fog, 30, 85);
+
+  const camera = new THREE.PerspectiveCamera(55, window.innerWidth/window.innerHeight, 0.1, 200);
+  camera.position.set(0, 7, 9);
+  camera.lookAt(0, 0, -2);
+
+  const renderer = new THREE.WebGLRenderer({ antialias: true });
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+  renderer.setSize(window.innerWidth, window.innerHeight);
+  renderer.shadowMap.enabled = true;
+  renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+  document.getElementById('game').appendChild(renderer.domElement);
+
+  window.addEventListener('resize', () => {
+    camera.aspect = window.innerWidth / window.innerHeight;
+    camera.updateProjectionMatrix();
+    renderer.setSize(window.innerWidth, window.innerHeight);
+  });
+
+  // 조명
+  const ambient = new THREE.AmbientLight(0xffffff, STAGES[0].ambient);
+  scene.add(ambient);
+  const sun = new THREE.DirectionalLight(0xfff4d6, STAGES[0].sun);
+  sun.position.set(-10, 20, 6);
+  sun.castShadow = true;
+  sun.shadow.mapSize.set(1024, 1024);
+  sun.shadow.camera.left = -12; sun.shadow.camera.right = 12;
+  sun.shadow.camera.top = 15; sun.shadow.camera.bottom = -15;
+  sun.shadow.camera.near = 1; sun.shadow.camera.far = 50;
+  sun.shadow.bias = -0.0005;
+  scene.add(sun);
+  const hemi = new THREE.HemisphereLight(0xaac4dc, 0x5a4a3a, 0.35);
+  scene.add(hemi);
+
+  function flatMat(color) {
+    return new THREE.MeshStandardMaterial({
+      color: color, roughness: 1, flatShading: true
+    });
+  }
+
+  // ============ 트랙 ============
+  const LANE_X = [-1.8, 0, 1.8];
+  const SEGMENT_LENGTH = 12;
+  const SEGMENT_COUNT = 6;
+  const segments = [];
+
+  function createSegment(z) {
+    const group = new THREE.Group();
+    const stage = STAGES[currentStage];
+    const trackMat = flatMat(stage.track[0]);
+    const trackMatAlt = flatMat(stage.track[1]);
+
+    for (let row = 0; row < 6; row++) {
+      for (let col = 0; col < 3; col++) {
+        const isAlt = (row + col) % 2 === 0;
+        const block = new THREE.Mesh(
+          new THREE.BoxGeometry(2, 0.3, 2),
+          isAlt ? trackMat : trackMatAlt
+        );
+        block.position.set(
+          -2 + col * 2,
+          -0.15,
+          -SEGMENT_LENGTH/2 + 1 + row * 2
+        );
+        block.receiveShadow = true;
+        group.add(block);
+      }
+    }
+
+    for (let side = -1; side <= 1; side += 2) {
+      for (let r = 0; r < 6; r++) {
+        const grassShade = Math.random() > 0.5 ? stage.grass[0] : stage.grass[1];
+        const grass = new THREE.Mesh(
+          new THREE.BoxGeometry(4, 0.4, 2),
+          flatMat(grassShade)
+        );
+        grass.position.set(side * 5, -0.1, -SEGMENT_LENGTH/2 + 1 + r * 2);
+        grass.receiveShadow = true;
+        grass.castShadow = true;
+        group.add(grass);
+      }
+      const decorCount = 2 + Math.floor(Math.random() * 2);
+      for (let d = 0; d < decorCount; d++) {
+        const decorType = Math.random();
+        let decor;
+        if (decorType < 0.6) decor = createTree(stage);
+        else if (decorType < 0.85) decor = createBush(stage);
+        else decor = createFlower(stage);
+        decor.position.set(
+          side * (4 + Math.random() * 2),
+          0,
+          -SEGMENT_LENGTH/2 + Math.random() * SEGMENT_LENGTH
+        );
+        group.add(decor);
+      }
+    }
+
+    group.position.z = z;
+    scene.add(group);
+    return group;
+  }
+
+  function createTree(stage) {
+    const g = new THREE.Group();
+    const trunkHeight = 0.8 + Math.random() * 0.4;
+    const trunk = new THREE.Mesh(
+      new THREE.BoxGeometry(0.35, trunkHeight, 0.35),
+      flatMat(stage.trunk)
+    );
+    trunk.position.y = trunkHeight / 2 + 0.1;
+    trunk.castShadow = true;
+    g.add(trunk);
+
+    const leafColor = stage.leaves[Math.floor(Math.random() * stage.leaves.length)];
+    const leafMat = flatMat(leafColor);
+    const foliageSize = 0.8 + Math.random() * 0.3;
+    const foliage = new THREE.Mesh(
+      new THREE.BoxGeometry(foliageSize, foliageSize, foliageSize),
+      leafMat
+    );
+    foliage.position.y = trunkHeight + 0.3 + foliageSize / 2;
+    foliage.rotation.y = Math.random() * Math.PI;
+    foliage.castShadow = true;
+    g.add(foliage);
+    if (Math.random() > 0.5) {
+      const foliage2 = new THREE.Mesh(
+        new THREE.BoxGeometry(foliageSize * 0.7, foliageSize * 0.7, foliageSize * 0.7),
+        leafMat
+      );
+      foliage2.position.set(
+        (Math.random() - 0.5) * 0.4,
+        trunkHeight + 0.5 + foliageSize,
+        (Math.random() - 0.5) * 0.4
+      );
+      foliage2.rotation.y = Math.random() * Math.PI;
+      foliage2.castShadow = true;
+      g.add(foliage2);
+    }
+    return g;
+  }
+
+  function createBush(stage) {
+    const g = new THREE.Group();
+    const mat = flatMat(stage.grass[0]);
+    for (let i = 0; i < 3; i++) {
+      const size = 0.35 + Math.random() * 0.15;
+      const cube = new THREE.Mesh(new THREE.BoxGeometry(size, size, size), mat);
+      cube.position.set(
+        (Math.random() - 0.5) * 0.5,
+        size / 2 + 0.1,
+        (Math.random() - 0.5) * 0.5
+      );
+      cube.rotation.y = Math.random() * Math.PI;
+      cube.castShadow = true;
+      g.add(cube);
+    }
+    return g;
+  }
+
+  function createFlower(stage) {
+    const g = new THREE.Group();
+    const stem = new THREE.Mesh(
+      new THREE.BoxGeometry(0.05, 0.3, 0.05),
+      flatMat(0x3a6a2a)
+    );
+    stem.position.y = 0.25;
+    g.add(stem);
+    const colors = [0xd85a82, 0xdcb440, 0xd47a34, 0x8a5abb];
+    const petal = new THREE.Mesh(
+      new THREE.BoxGeometry(0.18, 0.12, 0.18),
+      flatMat(colors[Math.floor(Math.random() * colors.length)])
+    );
+    petal.position.y = 0.42;
+    g.add(petal);
+    return g;
+  }
+
+  for (let i = 0; i < SEGMENT_COUNT; i++) {
+    segments.push(createSegment(-i * SEGMENT_LENGTH + SEGMENT_LENGTH));
+  }
+
+  // 구름
+  const clouds = [];
+  function createCloud() {
+    const g = new THREE.Group();
+    const mat = flatMat(0xe4ecf0);
+    for (let i = 0; i < 4; i++) {
+      const size = 0.6 + Math.random() * 0.5;
+      const cube = new THREE.Mesh(new THREE.BoxGeometry(size, size * 0.8, size), mat);
+      cube.position.set(i * 0.7 - 1, (Math.random() - 0.5) * 0.3, 0);
+      g.add(cube);
+    }
+    return g;
+  }
+  for (let i = 0; i < 6; i++) {
+    const c = createCloud();
+    c.position.set((Math.random() - 0.5) * 50, 9 + Math.random() * 4, -25 - Math.random() * 30);
+    c.userData.speed = 0.4 + Math.random() * 0.3;
+    scene.add(c);
+    clouds.push(c);
+  }
+
+  // 배경 산
+  const mountains = [];
+  function createMountains() {
+    // 기존 산 제거
+    for (const m of mountains) scene.remove(m);
+    mountains.length = 0;
+    const stage = STAGES[currentStage];
+    const mountainMat = flatMat(stage.mountain[0]);
+    const mountainMat2 = flatMat(stage.mountain[1]);
+    for (let i = 0; i < 15; i++) {
+      const size = 3 + Math.random() * 5;
+      const mountain = new THREE.Mesh(
+        new THREE.ConeGeometry(size, size * 1.2, 4),
+        Math.random() > 0.5 ? mountainMat : mountainMat2
+      );
+      mountain.position.set(
+        (Math.random() - 0.5) * 80,
+        size * 0.6 - 1,
+        -40 - Math.random() * 25
+      );
+      mountain.rotation.y = Math.random() * Math.PI;
+      scene.add(mountain);
+      mountains.push(mountain);
+    }
+  }
+  createMountains();
+
+  // ============================================
+  // 스테이지 전환
+  // ============================================
+  function transitionToStage(idx) {
+    const newStage = idx % STAGES.length;
+    currentStage = newStage;
+    const stage = STAGES[newStage];
+
+    scene.background = new THREE.Color(stage.sky);
+    scene.fog = new THREE.Fog(stage.fog, 30, 85);
+    ambient.intensity = stage.ambient;
+    sun.intensity = stage.sun;
+
+    // 세그먼트 다시 생성
+    for (const seg of segments) scene.remove(seg);
+    segments.length = 0;
+    for (let i = 0; i < SEGMENT_COUNT; i++) {
+      segments.push(createSegment(-i * SEGMENT_LENGTH + SEGMENT_LENGTH));
+    }
+
+    // 산도 다시
+    createMountains();
+
+    // 배너 표시
+    document.getElementById('banner-num').textContent = newStage + 1;
+    document.getElementById('banner-name').textContent = stage.name;
+    const banner = document.getElementById('stage-banner');
+    banner.classList.remove('show');
+    void banner.offsetWidth;
+    banner.classList.add('show');
+    setTimeout(() => banner.classList.remove('show'), 2000);
+
+    // HUD 스테이지 번호
+    document.getElementById('stage-num').textContent = newStage + 1;
+  }
+
+  // ============================================
+  // 캐릭터 (이전과 동일)
+  // ============================================
+  function createCharacter(type) {
+    const group = new THREE.Group();
+    const schemes = [
+      { body: 0xffd54a, belly: 0xfff0a0, beak: 0xff8a1a, foot: 0xff8a1a, accent: 0xff6a00, eye: 0x1a0a1a },
+      { body: 0x5abf4a, belly: 0xe8f8a0, beak: 0xff8a9a, foot: 0x4aa038, accent: 0x3a8028, eye: 0x1a0a1a },
+      { body: 0xffffff, belly: 0xffffff, beak: 0x2a2a2a, foot: 0x2a2a2a, accent: 0x2a2a2a, eye: 0x1a0a1a }
+    ];
+    const s = schemes[type];
+    const bodyMat = flatMat(s.body);
+    const bellyMat = flatMat(s.belly);
+    const accentMat = flatMat(s.accent);
+    const footMat = flatMat(s.foot);
+    const beakMat = flatMat(s.beak);
+    const eyeMat = flatMat(s.eye);
+    const whiteMat = flatMat(0xffffff);
+
+    const body = new THREE.Mesh(new THREE.BoxGeometry(0.65, 0.55, 0.5), bodyMat);
+    body.position.y = 0.55;
+    body.castShadow = true;
+    group.add(body);
+
+    const belly = new THREE.Mesh(new THREE.BoxGeometry(0.45, 0.4, 0.06), bellyMat);
+    belly.position.set(0, 0.5, 0.28);
+    group.add(belly);
+
+    const head = new THREE.Group();
+    head.position.y = 1.25;
+    const headMain = new THREE.Mesh(new THREE.BoxGeometry(0.8, 0.75, 0.75), bodyMat);
+    headMain.castShadow = true;
+    head.add(headMain);
+
+    if (type === 2) {
+      const patch1 = new THREE.Mesh(new THREE.BoxGeometry(0.24, 0.24, 0.03), accentMat);
+      patch1.position.set(-0.18, 0.08, 0.38);
+      head.add(patch1);
+      const patch2 = new THREE.Mesh(new THREE.BoxGeometry(0.24, 0.24, 0.03), accentMat);
+      patch2.position.set(0.18, 0.08, 0.38);
+      head.add(patch2);
+    }
+
+    const eyeW1 = new THREE.Mesh(new THREE.BoxGeometry(0.15, 0.18, 0.04), whiteMat);
+    eyeW1.position.set(-0.18, 0.1, 0.4);
+    head.add(eyeW1);
+    const eyeW2 = new THREE.Mesh(new THREE.BoxGeometry(0.15, 0.18, 0.04), whiteMat);
+    eyeW2.position.set(0.18, 0.1, 0.4);
+    head.add(eyeW2);
+    const pupil1 = new THREE.Mesh(new THREE.BoxGeometry(0.08, 0.12, 0.03), eyeMat);
+    pupil1.position.set(-0.17, 0.08, 0.42);
+    head.add(pupil1);
+    const pupil2 = new THREE.Mesh(new THREE.BoxGeometry(0.08, 0.12, 0.03), eyeMat);
+    pupil2.position.set(0.17, 0.08, 0.42);
+    head.add(pupil2);
+    const hl1 = new THREE.Mesh(new THREE.BoxGeometry(0.03, 0.05, 0.02), whiteMat);
+    hl1.position.set(-0.15, 0.11, 0.44);
+    head.add(hl1);
+    const hl2 = new THREE.Mesh(new THREE.BoxGeometry(0.03, 0.05, 0.02), whiteMat);
+    hl2.position.set(0.19, 0.11, 0.44);
+    head.add(hl2);
+
+    if (type === 0) {
+      const beak = new THREE.Mesh(new THREE.BoxGeometry(0.18, 0.1, 0.12), beakMat);
+      beak.position.set(0, -0.1, 0.42);
+      head.add(beak);
+      const beakBot = new THREE.Mesh(new THREE.BoxGeometry(0.14, 0.06, 0.1), beakMat);
+      beakBot.position.set(0, -0.18, 0.4);
+      head.add(beakBot);
+      const cheek1 = new THREE.Mesh(new THREE.BoxGeometry(0.08, 0.06, 0.02), flatMat(0xff9ab3));
+      cheek1.position.set(-0.3, -0.1, 0.38);
+      head.add(cheek1);
+      const cheek2 = new THREE.Mesh(new THREE.BoxGeometry(0.08, 0.06, 0.02), flatMat(0xff9ab3));
+      cheek2.position.set(0.3, -0.1, 0.38);
+      head.add(cheek2);
+      const tuft1 = new THREE.Mesh(new THREE.BoxGeometry(0.08, 0.14, 0.08), flatMat(s.accent));
+      tuft1.position.set(0, 0.44, 0);
+      tuft1.rotation.z = 0.2;
+      head.add(tuft1);
+      const tuft2 = new THREE.Mesh(new THREE.BoxGeometry(0.06, 0.1, 0.06), flatMat(s.accent));
+      tuft2.position.set(-0.08, 0.42, 0);
+      tuft2.rotation.z = -0.3;
+      head.add(tuft2);
+    } else if (type === 1) {
+      eyeW1.position.set(-0.22, 0.28, 0.25);
+      eyeW1.scale.set(1.3, 1.3, 3);
+      eyeW2.position.set(0.22, 0.28, 0.25);
+      eyeW2.scale.set(1.3, 1.3, 3);
+      pupil1.position.set(-0.22, 0.3, 0.38);
+      pupil1.scale.set(1.2, 1.2, 1);
+      pupil2.position.set(0.22, 0.3, 0.38);
+      pupil2.scale.set(1.2, 1.2, 1);
+      hl1.position.set(-0.25, 0.33, 0.42);
+      hl2.position.set(0.19, 0.33, 0.42);
+      const eyeBase1 = new THREE.Mesh(new THREE.BoxGeometry(0.22, 0.22, 0.3), flatMat(0x6acc58));
+      eyeBase1.position.set(-0.22, 0.25, 0.25);
+      head.add(eyeBase1);
+      const eyeBase2 = new THREE.Mesh(new THREE.BoxGeometry(0.22, 0.22, 0.3), flatMat(0x6acc58));
+      eyeBase2.position.set(0.22, 0.25, 0.25);
+      head.add(eyeBase2);
+      const mouth = new THREE.Mesh(new THREE.BoxGeometry(0.45, 0.04, 0.03), eyeMat);
+      mouth.position.set(0, -0.15, 0.4);
+      head.add(mouth);
+      const cheek1 = new THREE.Mesh(new THREE.BoxGeometry(0.1, 0.07, 0.02), flatMat(0xff9ab3));
+      cheek1.position.set(-0.3, -0.05, 0.38);
+      head.add(cheek1);
+      const cheek2 = new THREE.Mesh(new THREE.BoxGeometry(0.1, 0.07, 0.02), flatMat(0xff9ab3));
+      cheek2.position.set(0.3, -0.05, 0.38);
+      head.add(cheek2);
+    } else {
+      const ear1 = new THREE.Mesh(new THREE.BoxGeometry(0.22, 0.22, 0.18), accentMat);
+      ear1.position.set(-0.28, 0.45, 0);
+      ear1.castShadow = true;
+      head.add(ear1);
+      const ear2 = new THREE.Mesh(new THREE.BoxGeometry(0.22, 0.22, 0.18), accentMat);
+      ear2.position.set(0.28, 0.45, 0);
+      ear2.castShadow = true;
+      head.add(ear2);
+      const nose = new THREE.Mesh(new THREE.BoxGeometry(0.1, 0.08, 0.04), eyeMat);
+      nose.position.set(0, -0.08, 0.4);
+      head.add(nose);
+      const mouth1 = new THREE.Mesh(new THREE.BoxGeometry(0.025, 0.06, 0.02), eyeMat);
+      mouth1.position.set(0, -0.16, 0.4);
+      head.add(mouth1);
+      const smile1 = new THREE.Mesh(new THREE.BoxGeometry(0.1, 0.025, 0.02), eyeMat);
+      smile1.position.set(-0.05, -0.21, 0.4);
+      head.add(smile1);
+      const smile2 = new THREE.Mesh(new THREE.BoxGeometry(0.1, 0.025, 0.02), eyeMat);
+      smile2.position.set(0.05, -0.21, 0.4);
+      head.add(smile2);
+      const cheek1 = new THREE.Mesh(new THREE.BoxGeometry(0.1, 0.06, 0.02), flatMat(0xffb8c8));
+      cheek1.position.set(-0.28, -0.14, 0.38);
+      head.add(cheek1);
+      const cheek2 = new THREE.Mesh(new THREE.BoxGeometry(0.1, 0.06, 0.02), flatMat(0xffb8c8));
+      cheek2.position.set(0.28, -0.14, 0.38);
+      head.add(cheek2);
+    }
+
+    group.add(head);
+
+    const arms = [];
+    for (let i = 0; i < 2; i++) {
+      const pivot = new THREE.Group();
+      const armColor = (type === 2) ? accentMat : bodyMat;
+      const arm = new THREE.Mesh(new THREE.BoxGeometry(0.18, 0.4, 0.22), armColor);
+      arm.position.y = -0.2;
+      arm.castShadow = true;
+      pivot.add(arm);
+      pivot.position.set(i === 0 ? -0.4 : 0.4, 0.7, 0);
+      group.add(pivot);
+      arms.push(pivot);
+    }
+
+    const legs = [];
+    for (let i = 0; i < 2; i++) {
+      const pivot = new THREE.Group();
+      const legColor = (type === 2) ? accentMat : bodyMat;
+      const leg = new THREE.Mesh(new THREE.BoxGeometry(0.2, 0.3, 0.22), legColor);
+      leg.position.y = -0.15;
+      leg.castShadow = true;
+      pivot.add(leg);
+      const foot = new THREE.Mesh(new THREE.BoxGeometry(0.24, 0.1, 0.32), footMat);
+      foot.position.set(0, -0.33, 0.05);
+      foot.castShadow = true;
+      pivot.add(foot);
+      pivot.position.set(i === 0 ? -0.15 : 0.15, 0.3, 0);
+      group.add(pivot);
+      legs.push(pivot);
+    }
+
+    if (type === 0) {
+      const tail = new THREE.Mesh(new THREE.BoxGeometry(0.14, 0.2, 0.1), flatMat(s.accent));
+      tail.position.set(0, 0.68, -0.3);
+      tail.rotation.x = 0.6;
+      tail.castShadow = true;
+      group.add(tail);
+    } else if (type === 2) {
+      const tail = new THREE.Mesh(new THREE.BoxGeometry(0.12, 0.12, 0.1), accentMat);
+      tail.position.set(0, 0.5, -0.3);
+      tail.castShadow = true;
+      group.add(tail);
+    }
+
+    group.userData.legs = legs;
+    group.userData.arms = arms;
+    group.userData.body = body;
+    group.userData.head = head;
+    return group;
+  }
+
+  let selectedChar = 0;
+  let player = createCharacter(selectedChar);
+  player.position.set(0, 0, 0);
+  scene.add(player);
+
+  // ============================================
+  // 금괴 & 장애물 & 파워업
+  // ============================================
+  const activeObjects = [];
+
+  function createGoldBar() {
+    const g = new THREE.Group();
+    const bar = new THREE.Mesh(
+      new THREE.BoxGeometry(0.4, 0.2, 0.24),
+      new THREE.MeshStandardMaterial({
+        color: 0xffd54a, metalness: 0.6, roughness: 0.4,
+        emissive: 0x663300, emissiveIntensity: 0.4, flatShading: true
+      })
+    );
+    bar.castShadow = true;
+    g.add(bar);
+    const hl = new THREE.Mesh(new THREE.BoxGeometry(0.3, 0.04, 0.18), flatMat(0xfff5a0));
+    hl.position.y = 0.11;
+    g.add(hl);
+    return g;
+  }
+
+  function createGoldPile() {
+    const g = new THREE.Group();
+    const mat = new THREE.MeshStandardMaterial({
+      color: 0xffd54a, metalness: 0.6, roughness: 0.4,
+      emissive: 0x663300, emissiveIntensity: 0.4, flatShading: true
+    });
+    for (let i = 0; i < 8; i++) {
+      const bar = new THREE.Mesh(new THREE.BoxGeometry(0.4, 0.2, 0.24), mat);
+      bar.position.set(
+        (Math.random() - 0.5) * 0.3,
+        0.1 + Math.floor(i / 3) * 0.22,
+        (Math.random() - 0.5) * 0.3
+      );
+      bar.rotation.y = Math.random() * Math.PI * 2;
+      bar.castShadow = true;
+      g.add(bar);
+    }
+    return g;
+  }
+
+  // 파워업 4종
+  function createPowerup(type) {
+    const g = new THREE.Group();
+    // 빛나는 받침대 (공통)
+    const pedestal = new THREE.Mesh(
+      new THREE.BoxGeometry(0.5, 0.05, 0.5),
+      new THREE.MeshStandardMaterial({ color: 0xffffff, emissive: 0xffffff, emissiveIntensity: 0.3 })
+    );
+    pedestal.position.y = 0.02;
+    g.add(pedestal);
+
+    const configs = {
+      magnet: { color: 0xff4a6a, emissive: 0x6a1818 },
+      shield: { color: 0x4acfff, emissive: 0x186070 },
+      boost: { color: 0xffd54a, emissive: 0x886a10 },
+      x2: { color: 0x7fff3f, emissive: 0x2a6a10 }
+    };
+    const cfg = configs[type];
+    const mat = new THREE.MeshStandardMaterial({
+      color: cfg.color, metalness: 0.3, roughness: 0.4,
+      emissive: cfg.emissive, emissiveIntensity: 0.6, flatShading: true
+    });
+
+    if (type === 'magnet') {
+      // 말굽 자석 (두 기둥 + 윗쪽 연결)
+      const left = new THREE.Mesh(new THREE.BoxGeometry(0.12, 0.4, 0.12), mat);
+      left.position.set(-0.12, 0.4, 0);
+      left.castShadow = true;
+      g.add(left);
+      const right = new THREE.Mesh(new THREE.BoxGeometry(0.12, 0.4, 0.12), mat);
+      right.position.set(0.12, 0.4, 0);
+      right.castShadow = true;
+      g.add(right);
+      const top = new THREE.Mesh(new THREE.BoxGeometry(0.36, 0.12, 0.12), mat);
+      top.position.set(0, 0.64, 0);
+      top.castShadow = true;
+      g.add(top);
+      // 끝 (파란 캡)
+      const capMat = flatMat(0xffffff);
+      const cap1 = new THREE.Mesh(new THREE.BoxGeometry(0.14, 0.1, 0.14), capMat);
+      cap1.position.set(-0.12, 0.22, 0);
+      g.add(cap1);
+      const cap2 = new THREE.Mesh(new THREE.BoxGeometry(0.14, 0.1, 0.14), capMat);
+      cap2.position.set(0.12, 0.22, 0);
+      g.add(cap2);
+    } else if (type === 'shield') {
+      // 방패 (5각형 박스)
+      const shield = new THREE.Mesh(new THREE.BoxGeometry(0.5, 0.55, 0.12), mat);
+      shield.position.y = 0.45;
+      shield.castShadow = true;
+      g.add(shield);
+      // 별 표시 (작은 흰 박스들)
+      const starMat = flatMat(0xffffff);
+      const star = new THREE.Mesh(new THREE.BoxGeometry(0.2, 0.08, 0.14), starMat);
+      star.position.set(0, 0.45, 0.05);
+      g.add(star);
+      const star2 = new THREE.Mesh(new THREE.BoxGeometry(0.08, 0.2, 0.14), starMat);
+      star2.position.set(0, 0.45, 0.05);
+      g.add(star2);
+    } else if (type === 'boost') {
+      // 번개
+      const bolt1 = new THREE.Mesh(new THREE.BoxGeometry(0.18, 0.3, 0.15), mat);
+      bolt1.position.set(0.05, 0.55, 0);
+      bolt1.rotation.z = 0.3;
+      bolt1.castShadow = true;
+      g.add(bolt1);
+      const bolt2 = new THREE.Mesh(new THREE.BoxGeometry(0.18, 0.3, 0.15), mat);
+      bolt2.position.set(-0.05, 0.3, 0);
+      bolt2.rotation.z = 0.3;
+      bolt2.castShadow = true;
+      g.add(bolt2);
+    } else if (type === 'x2') {
+      // X2 박스
+      const box = new THREE.Mesh(new THREE.BoxGeometry(0.4, 0.4, 0.4), mat);
+      box.position.y = 0.3;
+      box.castShadow = true;
+      g.add(box);
+      // "2" 표시 (심플한 박스)
+      const numMat = flatMat(0xffffff);
+      const n1 = new THREE.Mesh(new THREE.BoxGeometry(0.16, 0.05, 0.05), numMat);
+      n1.position.set(0, 0.42, 0.22);
+      g.add(n1);
+      const n2 = new THREE.Mesh(new THREE.BoxGeometry(0.05, 0.08, 0.05), numMat);
+      n2.position.set(0.07, 0.36, 0.22);
+      g.add(n2);
+      const n3 = new THREE.Mesh(new THREE.BoxGeometry(0.16, 0.05, 0.05), numMat);
+      n3.position.set(0, 0.3, 0.22);
+      g.add(n3);
+      const n4 = new THREE.Mesh(new THREE.BoxGeometry(0.05, 0.08, 0.05), numMat);
+      n4.position.set(-0.07, 0.24, 0.22);
+      g.add(n4);
+      const n5 = new THREE.Mesh(new THREE.BoxGeometry(0.16, 0.05, 0.05), numMat);
+      n5.position.set(0, 0.18, 0.22);
+      g.add(n5);
+    }
+
+    g.userData.powerupType = type;
+    return g;
+  }
+
+  function createBarrier() {
+    const group = new THREE.Group();
+    const base = new THREE.Mesh(new THREE.BoxGeometry(1.5, 1.0, 0.25), flatMat(0xdc3030));
+    base.position.y = 0.5;
+    base.castShadow = true;
+    group.add(base);
+    for (let i = 0; i < 3; i++) {
+      const stripe = new THREE.Mesh(new THREE.BoxGeometry(1.52, 0.12, 0.26), flatMat(0xffffff));
+      stripe.position.set(0, 0.2 + i * 0.32, 0);
+      group.add(stripe);
+    }
+    for (let i = -1; i <= 1; i += 2) {
+      const light = new THREE.Mesh(
+        new THREE.BoxGeometry(0.2, 0.2, 0.2),
+        new THREE.MeshStandardMaterial({ color: 0xffaa00, emissive: 0xff6600, emissiveIntensity: 0.8, flatShading: true })
+      );
+      light.position.set(i * 0.5, 1.15, 0);
+      group.add(light);
+    }
+    return group;
+  }
+
+  function createLowBar() {
+    const group = new THREE.Group();
+    const bar = new THREE.Mesh(new THREE.BoxGeometry(1.8, 0.22, 0.3), flatMat(0x4090ff));
+    bar.position.y = 1.4;
+    bar.castShadow = true;
+    group.add(bar);
+    for (let i = 0; i < 3; i++) {
+      const stripe = new THREE.Mesh(new THREE.BoxGeometry(1.82, 0.07, 0.31), flatMat(0xffffff));
+      stripe.position.set(0, 1.4 - 0.08 + i * 0.08, 0);
+      group.add(stripe);
+    }
+    for (let i = -1; i <= 1; i += 2) {
+      const post = new THREE.Mesh(new THREE.BoxGeometry(0.14, 1.4, 0.14), flatMat(0x6a6a70));
+      post.position.set(i * 0.85, 0.7, 0);
+      post.castShadow = true;
+      group.add(post);
+    }
+    const arrow = new THREE.Mesh(new THREE.BoxGeometry(0.2, 0.06, 0.04), flatMat(0xffffff));
+    arrow.position.set(0, 1.4, 0.2);
+    group.add(arrow);
+    const arrowTip = new THREE.Mesh(new THREE.ConeGeometry(0.08, 0.15, 4), flatMat(0xffffff));
+    arrowTip.position.set(0, 1.22, 0.2);
+    arrowTip.rotation.x = Math.PI;
+    arrowTip.rotation.y = Math.PI / 4;
+    group.add(arrowTip);
+    return group;
+  }
+
+  function createCrate() {
+    const g = new THREE.Group();
+    const box = new THREE.Mesh(new THREE.BoxGeometry(1.1, 1.0, 1.0), flatMat(0xa06a38));
+    box.position.y = 0.5;
+    box.castShadow = true;
+    g.add(box);
+    const plank = new THREE.Mesh(new THREE.BoxGeometry(1.12, 0.05, 1.02), flatMat(0x6a4020));
+    plank.position.y = 0.5;
+    g.add(plank);
+    const plank2 = new THREE.Mesh(new THREE.BoxGeometry(1.12, 1.02, 0.05), flatMat(0x6a4020));
+    plank2.position.set(0, 0.5, 0);
+    g.add(plank2);
+    const corner = new THREE.Mesh(new THREE.BoxGeometry(1.14, 0.15, 0.15), flatMat(0x404040));
+    corner.position.set(0, 1.0, -0.45);
+    g.add(corner);
+    return g;
+  }
+
+  function spawnObjectsAhead(zStart) {
+    const rows = 4;
+    for (let r = 0; r < rows; r++) {
+      const rowZ = zStart - r * 3.2 - Math.random() * 1;
+      const pattern = Math.random();
+
+      // 파워업 (2% 확률, 30초 후부터)
+      if (pattern < 0.025 && state.runTime > 15) {
+        const types = ['magnet', 'shield', 'boost', 'x2'];
+        const ptype = types[Math.floor(Math.random() * types.length)];
+        const lane = Math.floor(Math.random() * 3);
+        const p = createPowerup(ptype);
+        p.position.set(LANE_X[lane], 0, rowZ);
+        scene.add(p);
+        activeObjects.push({ mesh: p, type: 'powerup', lane, z: rowZ, ptype });
+      } else if (pattern < 0.1 && state.runTime > 10) {
+        const lane = Math.floor(Math.random() * 3);
+        const pile = createGoldPile();
+        pile.position.set(LANE_X[lane], 0, rowZ);
+        scene.add(pile);
+        activeObjects.push({ mesh: pile, type: 'goldpile', lane, z: rowZ, value: 10 });
+      } else if (pattern < 0.4) {
+        const blockedLanes = new Set();
+        const count = Math.random() < 0.35 ? 2 : 1;
+        for (let i = 0; i < count; i++) {
+          let lane = Math.floor(Math.random() * 3);
+          let tries = 0;
+          while (blockedLanes.has(lane) && tries < 3) { lane = Math.floor(Math.random() * 3); tries++; }
+          if (blockedLanes.has(lane)) continue;
+          blockedLanes.add(lane);
+          const rand = Math.random();
+          let obstacleType, mesh;
+          if (rand < 0.45) { obstacleType = 'barrier'; mesh = createBarrier(); }
+          else if (rand < 0.75) { obstacleType = 'lowbar'; mesh = createLowBar(); }
+          else { obstacleType = 'crate'; mesh = createCrate(); }
+          mesh.position.set(LANE_X[lane], 0, rowZ);
+          scene.add(mesh);
+          activeObjects.push({ mesh, type: obstacleType, lane, z: rowZ });
+        }
+        for (let lane = 0; lane < 3; lane++) {
+          if (blockedLanes.has(lane)) continue;
+          if (Math.random() < 0.65) {
+            const bar = createGoldBar();
+            bar.position.set(LANE_X[lane], 0.5, rowZ);
+            scene.add(bar);
+            activeObjects.push({ mesh: bar, type: 'gold', lane, z: rowZ });
+          }
+        }
+      } else if (pattern < 0.78) {
+        const lane = Math.floor(Math.random() * 3);
+        for (let c = 0; c < 4; c++) {
+          const bar = createGoldBar();
+          bar.position.set(LANE_X[lane], 0.5, rowZ - c * 0.8);
+          scene.add(bar);
+          activeObjects.push({ mesh: bar, type: 'gold', lane, z: rowZ - c * 0.8 });
+        }
+      } else {
+        if (Math.random() < 0.6) {
+          const lane = Math.floor(Math.random() * 3);
+          const bar = createGoldBar();
+          bar.position.set(LANE_X[lane], 0.5, rowZ);
+          scene.add(bar);
+          activeObjects.push({ mesh: bar, type: 'gold', lane, z: rowZ });
+        }
+      }
+    }
+  }
+
+  // ============================================
+  // 미션 시스템
+  // ============================================
+  const MISSION_POOL = [
+    { id: 'gold50', text: '금괴 50개 수집', target: 50, type: 'gold', reward: 500 },
+    { id: 'gold100', text: '금괴 100개 수집', target: 100, type: 'gold', reward: 1000 },
+    { id: 'gold200', text: '금괴 200개 수집', target: 200, type: 'gold', reward: 2000 },
+    { id: 'dist300', text: '300m 달리기', target: 300, type: 'distance', reward: 500 },
+    { id: 'dist700', text: '700m 달리기', target: 700, type: 'distance', reward: 1200 },
+    { id: 'dist1500', text: '1500m 달리기', target: 1500, type: 'distance', reward: 2500 },
+    { id: 'jump15', text: '점프 15번', target: 15, type: 'jump', reward: 400 },
+    { id: 'slide10', text: '슬라이드 10번', target: 10, type: 'slide', reward: 400 },
+    { id: 'multi5', text: '배수 ×5 달성', target: 5, type: 'multi', reward: 600 },
+    { id: 'multi10', text: '배수 ×10 달성', target: 10, type: 'multi', reward: 1200 },
+    { id: 'pow3', text: '파워업 3개 획득', target: 3, type: 'powerup', reward: 800 },
+    { id: 'stage2', text: '스테이지 2 도달', target: 2, type: 'stage', reward: 1000 },
+    { id: 'stage4', text: '스테이지 4 도달', target: 4, type: 'stage', reward: 2500 },
+  ];
+
+  let currentMission = null;
+  let missionProgress = 0;
+  let missionIdx = 0;
+
+  function selectNextMission() {
+    missionIdx = (missionIdx + 1) % MISSION_POOL.length;
+    currentMission = MISSION_POOL[missionIdx];
+    missionProgress = 0;
+    updateMissionUI();
+  }
+
+  function updateMissionUI() {
+    if (!currentMission) return;
+    document.getElementById('mission-text').textContent = currentMission.text;
+    const pct = Math.min(100, (missionProgress / currentMission.target) * 100);
+    document.getElementById('mission-progress').style.width = pct + '%';
+  }
+
+  function progressMission(type, amount, absoluteValue) {
+    if (!currentMission || currentMission.type !== type) return;
+    if (absoluteValue !== undefined) {
+      missionProgress = Math.max(missionProgress, absoluteValue);
+    } else {
+      missionProgress += amount;
+    }
+    if (missionProgress >= currentMission.target) {
+      completeMission();
+    } else {
+      updateMissionUI();
+    }
+  }
+
+  function completeMission() {
+    const reward = currentMission.reward;
+    state.score += reward;
+    // 팝업 표시
+    document.getElementById('mc-name').textContent = currentMission.text;
+    document.getElementById('mc-reward').textContent = '+' + reward + ' pts';
+    const el = document.getElementById('mission-complete');
+    el.classList.remove('show');
+    void el.offsetWidth;
+    el.classList.add('show');
+    // 다음 미션
+    setTimeout(selectNextMission, 500);
+  }
+
+  // ============================================
+  // 파워업 시스템
+  // ============================================
+  const powerupState = {
+    magnet: 0,   // 남은 시간 (초)
+    shield: 0,
+    boost: 0,
+    x2: 0
+  };
+  const POWERUP_DURATION = 6;
+
+  function activatePowerup(type) {
+    powerupState[type] = POWERUP_DURATION;
+    progressMission('powerup', 1);
+    updatePowerupUI();
+  }
+
+  function updatePowerupUI() {
+    const bar = document.getElementById('powerup-bar');
+    const icons = { magnet: '🧲', shield: '🛡️', boost: '⚡', x2: '✨' };
+    bar.innerHTML = '';
+    let hasAny = false;
+    for (const [type, time] of Object.entries(powerupState)) {
+      if (time > 0) {
+        hasAny = true;
+        const el = document.createElement('div');
+        el.className = 'powerup-icon ' + type;
+        el.innerHTML = icons[type] + '<div class="powerup-timer" style="transform:scaleX(' + (time / POWERUP_DURATION) + ')"></div>';
+        bar.appendChild(el);
+      }
+    }
+    bar.style.display = hasAny ? 'flex' : 'none';
+  }
+
+  // ============================================
+  // 게임 상태
+  // ============================================
+  const state = {
+    running: false, paused: false,
+    speed: 12, targetSpeed: 12, maxSpeed: 26,
+    lane: 1, laneTarget: 1,
+    jumpVel: 0, jumping: false, sliding: false, slideTimer: 0,
+    coins: 0, score: 0, multi: 1,
+    distance: 0, runTime: 0, goldRushTime: 0,
+    jumpCount: 0, slideCount: 0,
+    reachedStage: 1,
+    bestScore: 0,
+  };
+
+  // localStorage 대신 메모리 (아티팩트 환경 제약)
+  function loadBest() {
+    return 0; // 아티팩트에선 저장 불가
+  }
+  state.bestScore = loadBest();
+
+  for (let i = 2; i < SEGMENT_COUNT; i++) {
+    spawnObjectsAhead(-i * SEGMENT_LENGTH + SEGMENT_LENGTH/2);
+  }
+
+  function moveLane(dir) {
+    if (!state.running || state.paused) return;
+    state.laneTarget = Math.max(0, Math.min(2, state.laneTarget + dir));
+  }
+  function jump() {
+    if (!state.running || state.paused) return;
+    if (!state.jumping && !state.sliding) {
+      state.jumpVel = 8.5;
+      state.jumping = true;
+      state.jumpCount++;
+      progressMission('jump', 1);
+    }
+  }
+  function slide() {
+    if (!state.running || state.paused) return;
+    if (!state.jumping && !state.sliding) {
+      state.sliding = true;
+      state.slideTimer = 0.6;
+      state.slideCount++;
+      progressMission('slide', 1);
+    }
+  }
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'ArrowLeft' || e.key === 'a') { moveLane(-1); e.preventDefault(); }
+    else if (e.key === 'ArrowRight' || e.key === 'd') { moveLane(1); e.preventDefault(); }
+    else if (e.key === 'ArrowUp' || e.key === 'w' || e.key === ' ') { jump(); e.preventDefault(); }
+    else if (e.key === 'ArrowDown' || e.key === 's') { slide(); e.preventDefault(); }
+  });
+
+  let touchStart = null;
+  renderer.domElement.addEventListener('touchstart', (e) => {
+    if (e.touches.length === 1) touchStart = { x: e.touches[0].clientX, y: e.touches[0].clientY };
+  }, { passive: true });
+  renderer.domElement.addEventListener('touchend', (e) => {
+    if (!touchStart || !state.running) return;
+    const t = e.changedTouches[0];
+    const dx = t.clientX - touchStart.x;
+    const dy = t.clientY - touchStart.y;
+    const absX = Math.abs(dx), absY = Math.abs(dy);
+    if (Math.max(absX, absY) < 25) { jump(); touchStart = null; return; }
+    if (absX > absY) {
+      if (dx > 0) moveLane(1); else moveLane(-1);
+    } else {
+      if (dy > 0) slide(); else jump();
+    }
+    touchStart = null;
+  }, { passive: true });
+
+  function checkCollision() {
+    const px = player.position.x;
+    const py = player.position.y;
+
+    // 자석: 가까운 금괴 끌어당김
+    if (powerupState.magnet > 0) {
+      for (const obj of activeObjects) {
+        if (obj.type === 'gold' || obj.type === 'goldpile') {
+          const dx = obj.mesh.position.x - px;
+          const dz = obj.mesh.position.z - player.position.z;
+          const dist = Math.sqrt(dx*dx + dz*dz);
+          if (dist < 4.5) {
+            const pull = Math.min(0.3, 1.5 / Math.max(0.1, dist));
+            obj.mesh.position.x -= dx * pull;
+            obj.mesh.position.z -= dz * pull;
+          }
+        }
+      }
+    }
+
+    for (let i = activeObjects.length - 1; i >= 0; i--) {
+      const obj = activeObjects[i];
+      const dx = Math.abs(obj.mesh.position.x - px);
+      const dz = Math.abs(obj.mesh.position.z - player.position.z);
+
+      const pickupRange = powerupState.magnet > 0 ? 1.0 : 0.7;
+      const obstacleRange = 0.7;
+
+      if (obj.type === 'gold' || obj.type === 'goldpile' || obj.type === 'powerup') {
+        if (dx < pickupRange && dz < 0.8) {
+          if (obj.type === 'gold') {
+            scene.remove(obj.mesh);
+            activeObjects.splice(i, 1);
+            collectGold(1);
+            spawnCoinFX(obj.mesh.position);
+          } else if (obj.type === 'goldpile') {
+            scene.remove(obj.mesh);
+            activeObjects.splice(i, 1);
+            collectGold(obj.value || 10);
+            spawnCoinFX(obj.mesh.position, 8);
+            state.goldRushTime = 3;
+          } else if (obj.type === 'powerup') {
+            scene.remove(obj.mesh);
+            activeObjects.splice(i, 1);
+            activatePowerup(obj.ptype);
+            spawnCoinFX(obj.mesh.position, 6);
+          }
+        }
+      } else if (dx < obstacleRange && dz < 0.8) {
+        // 장애물
+        if (powerupState.shield > 0 || powerupState.boost > 0) {
+          // 방어막/부스트 — 장애물 파괴
+          scene.remove(obj.mesh);
+          activeObjects.splice(i, 1);
+          spawnCoinFX(obj.mesh.position, 5);
+          // 방어막은 1번 쓰고 해제
+          if (powerupState.shield > 0 && powerupState.boost <= 0) {
+            powerupState.shield = 0;
+            updatePowerupUI();
+          }
+          continue;
+        }
+        if (obj.type === 'barrier') {
+          if (py > 1.2) continue;
+          gameOver(); return;
+        } else if (obj.type === 'lowbar') {
+          if (state.sliding) continue;
+          gameOver(); return;
+        } else if (obj.type === 'crate') {
+          if (py > 1.0) continue;
+          gameOver(); return;
+        }
+      }
+    }
+  }
+
+  function collectGold(amount) {
+    const multiplier = powerupState.x2 > 0 ? 2 : 1;
+    const gain = amount * state.multi * multiplier;
+    state.coins += gain;
+    state.score += 10 * gain;
+    const prevMulti = state.multi;
+    const threshold = Math.floor(state.coins / 15);
+    state.multi = Math.min(20, 1 + threshold);
+    if (state.multi > prevMulti) {
+      const box = document.getElementById('multi-box');
+      box.classList.remove('bump');
+      void box.offsetWidth;
+      box.classList.add('bump');
+      progressMission('multi', 0, state.multi);
+    }
+    progressMission('gold', gain);
+    updateHUD();
+  }
+
+  function spawnCoinFX(worldPos, count) {
+    count = count || 3;
+    const vec = worldPos.clone().project(camera);
+    const sx = (vec.x * 0.5 + 0.5) * window.innerWidth;
+    const sy = (-vec.y * 0.5 + 0.5) * window.innerHeight;
+    const overlay = document.getElementById('fx-overlay');
+    for (let i = 0; i < count; i++) {
+      const el = document.createElement('div');
+      el.className = 'coin-fx';
+      el.style.left = sx + 'px';
+      el.style.top = sy + 'px';
+      overlay.appendChild(el);
+      const angle = Math.random() * Math.PI * 2;
+      const dist = 50 + Math.random() * 50;
+      const tx = Math.cos(angle) * dist;
+      const ty = Math.sin(angle) * dist - 40;
+      el.animate([
+        { transform: 'translate(-50%, -50%) scale(1) rotate(0deg)', opacity: 1 },
+        { transform: 'translate(calc(-50% + ' + tx + 'px), calc(-50% + ' + ty + 'px)) scale(0.3) rotate(360deg)', opacity: 0 }
+      ], { duration: 600, easing: 'ease-out' });
+      setTimeout(() => el.remove(), 650);
+    }
+  }
+
+  function gameOver() {
+    state.running = false;
+    const isNewBest = state.score > state.bestScore;
+    if (isNewBest) state.bestScore = Math.floor(state.score);
+    document.getElementById('final-score').textContent = Math.floor(state.score);
+    document.getElementById('best-score').textContent = Math.floor(state.bestScore);
+    document.getElementById('final-coins').textContent = state.coins;
+    document.getElementById('final-dist').textContent = Math.floor(state.distance) + 'm';
+    document.getElementById('final-stage').textContent = state.reachedStage;
+    document.getElementById('best-label').style.display = isNewBest ? 'block' : 'none';
+    document.getElementById('gameover').classList.add('show');
+  }
+
+  function updateHUD() {
+    document.getElementById('coin-count').textContent = state.coins;
+    document.getElementById('multi').textContent = state.multi;
+    document.getElementById('score').textContent = Math.floor(state.score);
+    document.getElementById('distance').textContent = Math.floor(state.distance);
+  }
+
+  let lastT = performance.now();
+  function animate(now) {
+    requestAnimationFrame(animate);
+    const dt = Math.min(0.05, (now - lastT) / 1000);
+    lastT = now;
+
+    for (const c of clouds) {
+      c.position.x -= c.userData.speed * dt;
+      if (c.position.x < -30) c.position.x = 30;
+    }
+
+    if (!state.running) {
+      const t = now * 0.001;
+      player.rotation.y = Math.sin(t * 1.5) * 0.3;
+      player.position.y = Math.abs(Math.sin(t * 4)) * 0.15;
+    }
+
+    if (state.running && !state.paused) {
+      state.runTime += dt;
+      state.targetSpeed = Math.min(state.maxSpeed, 12 + state.runTime * 0.25);
+      state.speed += (state.targetSpeed - state.speed) * 0.02;
+
+      // 파워업 처리
+      let speedMult = 1;
+      if (powerupState.boost > 0) speedMult = 1.6;
+      else if (state.goldRushTime > 0) speedMult = 1.3;
+
+      const effectiveSpeed = state.speed * speedMult;
+
+      state.distance += effectiveSpeed * dt * 0.5;
+      state.score += effectiveSpeed * dt * 0.8;
+
+      progressMission('distance', 0, Math.floor(state.distance));
+
+      // 스테이지 전환 체크
+      const newStageIdx = Math.floor(state.distance / STAGE_DISTANCE);
+      if (newStageIdx !== currentStage && newStageIdx > 0) {
+        transitionToStage(newStageIdx);
+        state.reachedStage = Math.max(state.reachedStage, (newStageIdx % STAGES.length) + 1);
+        progressMission('stage', 0, state.reachedStage);
+      }
+
+      if (state.goldRushTime > 0) state.goldRushTime -= dt;
+
+      // 파워업 타이머
+      for (const key of ['magnet', 'shield', 'boost', 'x2']) {
+        if (powerupState[key] > 0) {
+          powerupState[key] -= dt;
+          if (powerupState[key] <= 0) powerupState[key] = 0;
+        }
+      }
+      updatePowerupUI();
+
+      const targetX = LANE_X[state.laneTarget];
+      const dx = targetX - player.position.x;
+      player.position.x += dx * 0.25;
+      player.rotation.z = -dx * 0.18;
+      player.rotation.y = dx * 0.08;
+
+      if (state.jumping) {
+        player.position.y += state.jumpVel * dt;
+        state.jumpVel -= 22 * dt;
+        if (player.position.y <= 0) {
+          player.position.y = 0;
+          state.jumping = false;
+          state.jumpVel = 0;
+        }
+      }
+      if (state.sliding) {
+        state.slideTimer -= dt;
+        player.scale.y = 0.5;
+        if (state.slideTimer <= 0) {
+          state.sliding = false;
+          player.scale.set(1, 1, 1);
+        }
+      }
+
+      const hopPhase = state.runTime * 10;
+      const hopY = Math.abs(Math.sin(hopPhase)) * 0.1;
+      const legs = player.userData.legs;
+      const arms = player.userData.arms;
+      if (legs && !state.sliding) {
+        if (state.jumping) {
+          legs[0].rotation.x = -0.4; legs[1].rotation.x = -0.6;
+          arms[0].rotation.x = -0.8; arms[1].rotation.x = -0.8;
+        } else {
+          legs[0].rotation.x = Math.sin(hopPhase) * 0.7;
+          legs[1].rotation.x = -Math.sin(hopPhase) * 0.7;
+          arms[0].rotation.x = -Math.sin(hopPhase) * 0.5;
+          arms[1].rotation.x = Math.sin(hopPhase) * 0.5;
+        }
+      }
+      if (player.userData.body && !state.jumping && !state.sliding) {
+        player.userData.body.position.y = 0.55 + hopY;
+        player.userData.head.position.y = 1.25 + hopY;
+      }
+
+      for (const seg of segments) {
+        seg.position.z += effectiveSpeed * dt;
+        if (seg.position.z > SEGMENT_LENGTH) {
+          seg.position.z -= SEGMENT_COUNT * SEGMENT_LENGTH;
+          spawnObjectsAhead(seg.position.z + SEGMENT_LENGTH/2);
+        }
+      }
+
+      for (let i = activeObjects.length - 1; i >= 0; i--) {
+        const obj = activeObjects[i];
+        obj.mesh.position.z += effectiveSpeed * dt;
+        if (obj.type === 'gold') {
+          obj.mesh.rotation.y += dt * 2.5;
+          obj.mesh.position.y = 0.5 + Math.sin(state.runTime * 4 + obj.z) * 0.08;
+        } else if (obj.type === 'powerup') {
+          obj.mesh.rotation.y += dt * 1.5;
+          obj.mesh.position.y = Math.sin(state.runTime * 3 + obj.z) * 0.1;
+        }
+        if (obj.mesh.position.z > 8) {
+          scene.remove(obj.mesh);
+          activeObjects.splice(i, 1);
+        }
+      }
+
+      checkCollision();
+
+      camera.position.x += (player.position.x * 0.3 - camera.position.x) * 0.08;
+
+      updateHUD();
+    }
+
+    renderer.render(scene, camera);
+  }
+
+  loadingEl.style.display = 'none';
+  document.getElementById('hud').style.display = 'flex';
+  document.getElementById('start-screen').classList.remove('hidden');
+
+  requestAnimationFrame(animate);
+
+  document.querySelectorAll('.char-card').forEach(card => {
+    card.addEventListener('click', () => {
+      document.querySelectorAll('.char-card').forEach(c => c.classList.remove('selected'));
+      card.classList.add('selected');
+      selectedChar = parseInt(card.dataset.char);
+      scene.remove(player);
+      player = createCharacter(selectedChar);
+      player.position.set(LANE_X[state.laneTarget], 0, 0);
+      scene.add(player);
+    });
+  });
+
+  function startGame() {
+    // 초기화
+    state.running = true;
+    state.paused = false;
+    state.speed = 12;
+    state.lane = 1;
+    state.laneTarget = 1;
+    state.jumpVel = 0;
+    state.jumping = false;
+    state.sliding = false;
+    state.coins = 0;
+    state.score = 0;
+    state.multi = 1;
+    state.runTime = 0;
+    state.distance = 0;
+    state.goldRushTime = 0;
+    state.jumpCount = 0;
+    state.slideCount = 0;
+    state.reachedStage = 1;
+
+    for (const k of ['magnet', 'shield', 'boost', 'x2']) powerupState[k] = 0;
+    updatePowerupUI();
+
+    // 스테이지 초기화
+    if (currentStage !== 0) {
+      transitionToStage(0);
+    }
+
+    // 첫 미션 선택 (랜덤)
+    missionIdx = Math.floor(Math.random() * MISSION_POOL.length) - 1;
+    selectNextMission();
+
+    player.position.set(0, 0, 0);
+    player.scale.set(1, 1, 1);
+    player.rotation.set(0, 0, 0);
+
+    for (const obj of activeObjects) scene.remove(obj.mesh);
+    activeObjects.length = 0;
+    segments.forEach((seg, i) => {
+      seg.position.z = -i * SEGMENT_LENGTH + SEGMENT_LENGTH;
+    });
+    for (let i = 2; i < SEGMENT_COUNT; i++) {
+      spawnObjectsAhead(-i * SEGMENT_LENGTH + SEGMENT_LENGTH/2);
+    }
+
+    document.getElementById('start-screen').classList.add('hidden');
+    document.getElementById('gameover').classList.remove('show');
+    updateHUD();
+  }
+
+  document.getElementById('play-btn').addEventListener('click', startGame);
+  document.getElementById('retry-btn').addEventListener('click', startGame);
+  document.getElementById('pause-btn').addEventListener('click', () => {
+    if (!state.running) return;
+    state.paused = !state.paused;
+    document.getElementById('pause-btn').textContent = state.paused ? '▶' : 'Ⅱ';
+  });
+
+  } catch (err) {
+    loadingEl.classList.add('error');
+    loadingEl.textContent = 'ERROR: ' + err.message + '\n\n' + (err.stack || '');
+    console.error(err);
+  }
+})();
+</script>
+</body>
+</html>
