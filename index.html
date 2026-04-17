@@ -348,6 +348,19 @@
     font-family: 'Courier New', monospace;
   }
 
+  /* 사운드 토글 버튼 */
+  .sound-btn {
+    width: 40px; height: 40px; border-radius: 6px;
+    background: #6a4aa0;
+    border: 3px solid #fff;
+    display: flex; align-items: center; justify-content: center;
+    color: #fff; font-weight: 900; font-size: 14px;
+    box-shadow: 3px 3px 0 rgba(0,0,0,0.4);
+    pointer-events: auto; cursor: pointer;
+    margin-right: 6px;
+  }
+  .sound-btn.muted { background: #555; }
+
   #fx-overlay { position: absolute; inset: 0; pointer-events: none; z-index: 8; }
   .coin-fx {
     position: absolute;
@@ -383,7 +396,10 @@
         </div>
       </div>
     </div>
-    <div class="pause-btn" id="pause-btn">Ⅱ</div>
+    <div style="display:flex;">
+      <div class="sound-btn" id="sound-btn">🔊</div>
+      <div class="pause-btn" id="pause-btn">Ⅱ</div>
+    </div>
   </div>
 
   <div class="powerup-bar" id="powerup-bar" style="display:none;"></div>
@@ -462,6 +478,239 @@
   }
 
   try {
+
+  // ============================================
+  // 🎵 Web Audio 사운드 엔진 (칩튠 BGM + 효과음)
+  // ============================================
+  const Audio = {
+    ctx: null,
+    masterGain: null,
+    bgmGain: null,
+    sfxGain: null,
+    enabled: true,
+    bgmPlaying: false,
+    bgmTimer: null,
+    currentStageIdx: 0,
+
+    init() {
+      if (this.ctx) return;
+      try {
+        this.ctx = new (window.AudioContext || window.webkitAudioContext)();
+        this.masterGain = this.ctx.createGain();
+        this.masterGain.gain.value = 0.5;
+        this.masterGain.connect(this.ctx.destination);
+        this.bgmGain = this.ctx.createGain();
+        this.bgmGain.gain.value = 0.25;
+        this.bgmGain.connect(this.masterGain);
+        this.sfxGain = this.ctx.createGain();
+        this.sfxGain.gain.value = 0.6;
+        this.sfxGain.connect(this.masterGain);
+      } catch (e) {
+        console.warn('Audio not supported', e);
+      }
+    },
+
+    resume() {
+      if (this.ctx && this.ctx.state === 'suspended') {
+        this.ctx.resume();
+      }
+    },
+
+    // 단일 음 재생 (효과음용)
+    beep(freq, duration, type, volume, destGain) {
+      if (!this.ctx || !this.enabled) return;
+      type = type || 'square';
+      volume = volume || 0.3;
+      destGain = destGain || this.sfxGain;
+
+      const osc = this.ctx.createOscillator();
+      const gain = this.ctx.createGain();
+      osc.type = type;
+      osc.frequency.value = freq;
+      gain.gain.setValueAtTime(volume, this.ctx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.001, this.ctx.currentTime + duration);
+      osc.connect(gain);
+      gain.connect(destGain);
+      osc.start();
+      osc.stop(this.ctx.currentTime + duration);
+    },
+
+    // 주파수 슬라이드 (점프, 수집)
+    slide(from, to, duration, type, volume) {
+      if (!this.ctx || !this.enabled) return;
+      type = type || 'square';
+      volume = volume || 0.25;
+      const osc = this.ctx.createOscillator();
+      const gain = this.ctx.createGain();
+      osc.type = type;
+      osc.frequency.setValueAtTime(from, this.ctx.currentTime);
+      osc.frequency.exponentialRampToValueAtTime(to, this.ctx.currentTime + duration);
+      gain.gain.setValueAtTime(volume, this.ctx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.001, this.ctx.currentTime + duration);
+      osc.connect(gain);
+      gain.connect(this.sfxGain);
+      osc.start();
+      osc.stop(this.ctx.currentTime + duration);
+    },
+
+    // 효과음 프리셋
+    coinSFX() { this.slide(880, 1320, 0.1, 'square', 0.2); },
+    jumpSFX() { this.slide(440, 880, 0.15, 'triangle', 0.25); },
+    slideSFX() { this.slide(600, 200, 0.2, 'sawtooth', 0.2); },
+    crashSFX() {
+      this.beep(120, 0.3, 'sawtooth', 0.35);
+      setTimeout(() => this.beep(80, 0.3, 'sawtooth', 0.3), 80);
+    },
+    powerupSFX() {
+      this.slide(440, 880, 0.08, 'square', 0.25);
+      setTimeout(() => this.slide(660, 1320, 0.08, 'square', 0.25), 80);
+      setTimeout(() => this.slide(880, 1760, 0.12, 'square', 0.25), 160);
+    },
+    missionSFX() {
+      const notes = [523, 659, 784, 1047];
+      notes.forEach((f, i) => setTimeout(() => this.beep(f, 0.15, 'square', 0.25), i * 100));
+    },
+    stageSFX() {
+      const notes = [392, 523, 659, 784, 1047];
+      notes.forEach((f, i) => setTimeout(() => this.beep(f, 0.2, 'triangle', 0.3), i * 120));
+    },
+    multiBumpSFX() { this.slide(660, 990, 0.1, 'square', 0.2); },
+
+    // ============================
+    // BGM (스테이지별 칩튠 루프)
+    // ============================
+    // 스테이지별 멜로디 (음계 반음 단위, null = 쉼)
+    // 4/4박자, 각 스텝은 1/8박
+    bgmTracks: [
+      // GRASSLAND - 경쾌한 C메이저
+      {
+        tempo: 130,
+        baseOct: 4,
+        melody: [60, 64, 67, 64, 60, 64, 67, 72, 71, 67, 64, 67, 65, 62, 60, null,
+                 60, 64, 67, 64, 60, 64, 67, 72, 74, 72, 71, 69, 67, 64, 60, null],
+        bass: [48, null, 48, null, 55, null, 55, null, 53, null, 53, null, 50, null, 50, null,
+               48, null, 48, null, 55, null, 55, null, 53, null, 53, null, 50, null, 48, null]
+      },
+      // DESERT - 이국적 단조 (D minor)
+      {
+        tempo: 110,
+        baseOct: 4,
+        melody: [62, 65, 69, 65, 62, 65, 69, 74, 72, 69, 65, 69, 67, 65, 62, null,
+                 62, 65, 69, 65, 62, 65, 69, 74, 75, 74, 72, 70, 69, 65, 62, null],
+        bass: [50, null, 50, null, 57, null, 57, null, 55, null, 55, null, 53, null, 50, null,
+               50, null, 50, null, 57, null, 57, null, 55, null, 55, null, 53, null, 50, null]
+      },
+      // SNOWFIELD - 잔잔한 하이키
+      {
+        tempo: 100,
+        baseOct: 5,
+        melody: [72, 76, 79, 76, 74, 72, 74, 76, 77, 76, 74, 72, 74, 72, 67, null,
+                 72, 76, 79, 81, 79, 76, 74, 76, 77, 79, 77, 76, 74, 72, 67, null],
+        bass: [60, null, 60, null, 67, null, 67, null, 65, null, 65, null, 62, null, 60, null,
+               60, null, 60, null, 67, null, 67, null, 65, null, 65, null, 62, null, 60, null]
+      },
+      // JUNGLE - 타악기적 리듬
+      {
+        tempo: 140,
+        baseOct: 4,
+        melody: [64, null, 67, 64, 62, null, 64, null, 67, null, 69, 67, 64, null, 62, null,
+                 64, 67, 69, 72, 71, 69, 67, 64, 67, 69, 72, null, 67, 64, 62, null],
+        bass: [52, null, 59, null, 52, null, 59, null, 52, null, 59, null, 52, null, 59, null,
+               52, null, 59, null, 52, null, 59, null, 52, null, 59, null, 52, null, 57, null]
+      },
+      // VOLCANO - 긴장감 (F# minor)
+      {
+        tempo: 125,
+        baseOct: 4,
+        melody: [66, 69, 73, 69, 66, 69, 73, 78, 76, 73, 69, 73, 71, 69, 66, null,
+                 66, 69, 73, 69, 66, 69, 73, 78, 80, 78, 76, 74, 73, 69, 66, null],
+        bass: [54, null, 54, null, 61, null, 61, null, 59, null, 59, null, 57, null, 54, null,
+               54, null, 54, null, 61, null, 61, null, 59, null, 59, null, 57, null, 54, null]
+      },
+      // NIGHT CITY - 신스웨이브 (A minor)
+      {
+        tempo: 115,
+        baseOct: 4,
+        melody: [69, 72, 76, 79, 76, 72, 69, 72, 74, 72, 69, 67, 65, 67, 69, null,
+                 69, 72, 76, 79, 81, 79, 76, 72, 74, 76, 72, 69, 67, 69, 65, null],
+        bass: [57, null, 57, null, 64, null, 64, null, 62, null, 62, null, 60, null, 57, null,
+               57, null, 57, null, 64, null, 64, null, 62, null, 62, null, 60, null, 57, null]
+      }
+    ],
+
+    midiToFreq(midi) {
+      return 440 * Math.pow(2, (midi - 69) / 12);
+    },
+
+    playBGMNote(midiNote, duration, type, gain) {
+      if (!this.ctx || !this.enabled || midiNote === null) return;
+      const osc = this.ctx.createOscillator();
+      const envGain = this.ctx.createGain();
+      osc.type = type;
+      osc.frequency.value = this.midiToFreq(midiNote);
+      envGain.gain.setValueAtTime(0, this.ctx.currentTime);
+      envGain.gain.linearRampToValueAtTime(gain, this.ctx.currentTime + 0.01);
+      envGain.gain.setValueAtTime(gain, this.ctx.currentTime + duration * 0.7);
+      envGain.gain.exponentialRampToValueAtTime(0.001, this.ctx.currentTime + duration);
+      osc.connect(envGain);
+      envGain.connect(this.bgmGain);
+      osc.start();
+      osc.stop(this.ctx.currentTime + duration);
+    },
+
+    stopBGM() {
+      if (this.bgmTimer) {
+        clearTimeout(this.bgmTimer);
+        this.bgmTimer = null;
+      }
+      this.bgmPlaying = false;
+    },
+
+    startBGM(stageIdx) {
+      this.stopBGM();
+      if (!this.ctx || !this.enabled) return;
+      this.currentStageIdx = stageIdx;
+      this.bgmPlaying = true;
+      this.scheduleBGMLoop();
+    },
+
+    scheduleBGMLoop() {
+      if (!this.bgmPlaying || !this.enabled) return;
+      const track = this.bgmTracks[this.currentStageIdx % this.bgmTracks.length];
+      const stepDuration = 60 / track.tempo / 2; // 1/8 note in seconds
+      let stepIndex = 0;
+
+      const playStep = () => {
+        if (!this.bgmPlaying) return;
+        const melodyNote = track.melody[stepIndex % track.melody.length];
+        const bassNote = track.bass[stepIndex % track.bass.length];
+
+        if (melodyNote !== null) {
+          this.playBGMNote(melodyNote, stepDuration * 1.5, 'square', 0.15);
+        }
+        if (bassNote !== null) {
+          this.playBGMNote(bassNote, stepDuration * 2, 'triangle', 0.2);
+        }
+        // 드럼 느낌 (저음 노이즈)
+        if (stepIndex % 4 === 0) {
+          this.playBGMNote(36, stepDuration * 0.3, 'sawtooth', 0.15);
+        } else if (stepIndex % 4 === 2) {
+          this.playBGMNote(48, stepDuration * 0.2, 'square', 0.1);
+        }
+
+        stepIndex++;
+        this.bgmTimer = setTimeout(playStep, stepDuration * 1000);
+      };
+      playStep();
+    },
+
+    setEnabled(on) {
+      this.enabled = on;
+      if (!on) this.stopBGM();
+    }
+  };
+
+  Audio.init();
 
   // ============================================
   // 스테이지 정의 (6개 순환)
@@ -805,6 +1054,12 @@
 
     // HUD 스테이지 번호
     document.getElementById('stage-num').textContent = newStage + 1;
+
+    // BGM & 효과음 전환
+    Audio.stageSFX();
+    if (Audio.bgmPlaying || state.running) {
+      setTimeout(() => Audio.startBGM(newStage), 700);
+    }
   }
 
   // ============================================
@@ -1334,6 +1589,7 @@
   function completeMission() {
     const reward = currentMission.reward;
     state.score += reward;
+    Audio.missionSFX();
     // 팝업 표시
     document.getElementById('mc-name').textContent = currentMission.text;
     document.getElementById('mc-reward').textContent = '+' + reward + ' pts';
@@ -1415,6 +1671,7 @@
       state.jumping = true;
       state.jumpCount++;
       progressMission('jump', 1);
+      Audio.jumpSFX();
     }
   }
   function slide() {
@@ -1424,6 +1681,7 @@
       state.slideTimer = 0.6;
       state.slideCount++;
       progressMission('slide', 1);
+      Audio.slideSFX();
     }
   }
 
@@ -1488,17 +1746,20 @@
             activeObjects.splice(i, 1);
             collectGold(1);
             spawnCoinFX(obj.mesh.position);
+            Audio.coinSFX();
           } else if (obj.type === 'goldpile') {
             scene.remove(obj.mesh);
             activeObjects.splice(i, 1);
             collectGold(obj.value || 10);
             spawnCoinFX(obj.mesh.position, 8);
             state.goldRushTime = 3;
+            Audio.powerupSFX();
           } else if (obj.type === 'powerup') {
             scene.remove(obj.mesh);
             activeObjects.splice(i, 1);
             activatePowerup(obj.ptype);
             spawnCoinFX(obj.mesh.position, 6);
+            Audio.powerupSFX();
           }
         }
       } else if (dx < obstacleRange && dz < 0.8) {
@@ -1543,6 +1804,7 @@
       void box.offsetWidth;
       box.classList.add('bump');
       progressMission('multi', 0, state.multi);
+      Audio.multiBumpSFX();
     }
     progressMission('gold', gain);
     updateHUD();
@@ -1574,6 +1836,8 @@
 
   function gameOver() {
     state.running = false;
+    Audio.crashSFX();
+    Audio.stopBGM();
     const isNewBest = state.score > state.bestScore;
     if (isNewBest) state.bestScore = Math.floor(state.score);
     document.getElementById('final-score').textContent = Math.floor(state.score);
@@ -1789,6 +2053,10 @@
     document.getElementById('start-screen').classList.add('hidden');
     document.getElementById('gameover').classList.remove('show');
     updateHUD();
+
+    // BGM 시작
+    Audio.resume();
+    Audio.startBGM(0);
   }
 
   document.getElementById('play-btn').addEventListener('click', startGame);
@@ -1797,6 +2065,29 @@
     if (!state.running) return;
     state.paused = !state.paused;
     document.getElementById('pause-btn').textContent = state.paused ? '▶' : 'Ⅱ';
+    // 일시정지 시 BGM도 정지
+    if (state.paused) {
+      Audio.stopBGM();
+    } else {
+      Audio.startBGM(currentStage);
+    }
+  });
+
+  // 사운드 토글
+  document.getElementById('sound-btn').addEventListener('click', () => {
+    Audio.setEnabled(!Audio.enabled);
+    const btn = document.getElementById('sound-btn');
+    if (Audio.enabled) {
+      btn.textContent = '🔊';
+      btn.classList.remove('muted');
+      if (state.running && !state.paused) {
+        Audio.resume();
+        Audio.startBGM(currentStage);
+      }
+    } else {
+      btn.textContent = '🔇';
+      btn.classList.add('muted');
+    }
   });
 
   } catch (err) {
