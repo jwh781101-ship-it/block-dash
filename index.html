@@ -91,26 +91,34 @@
   }
 
   .mission-box {
-    margin-top: 4px;
-    background: rgba(26, 10, 62, 0.85);
+    position: fixed;
+    left: 50%;
+    bottom: 14px;
+    transform: translateX(-50%);
+    background: rgba(26, 10, 62, 0.75);
     border: 2px solid #a88ce0;
-    border-radius: 6px;
-    padding: 4px 10px;
+    border-radius: 8px;
+    padding: 4px 14px;
     color: #fff; font-size: 11px;
-    max-width: 200px;
+    min-width: 200px;
+    max-width: 280px;
     box-shadow: 2px 2px 0 rgba(0,0,0,0.5);
+    z-index: 11;
+    pointer-events: none;
   }
   .mission-title {
     color: #a88ce0; font-weight: 900; font-size: 9px;
     letter-spacing: 1.5px; margin-bottom: 2px;
+    text-align: center;
   }
   .mission-text {
     font-weight: 700; letter-spacing: 0.5px;
     text-shadow: 1px 1px 0 #000;
+    text-align: center;
   }
   .mission-progress {
     margin-top: 3px;
-    height: 6px; background: #2a1a4a;
+    height: 5px; background: #2a1a4a;
     border-radius: 3px; overflow: hidden;
     position: relative;
   }
@@ -488,17 +496,19 @@
         <div class="score"><span id="score">0</span></div>
         <div class="distance-text"><span id="distance">0</span>m</div>
       </div>
-      <div class="mission-box" id="mission-box">
-        <div class="mission-title">MISSION</div>
-        <div class="mission-text" id="mission-text">-</div>
-        <div class="mission-progress">
-          <div class="mission-progress-fill" id="mission-progress" style="width:0%"></div>
-        </div>
-      </div>
     </div>
     <div style="display:flex;">
       <div class="sound-btn" id="sound-btn">🔊</div>
       <div class="pause-btn" id="pause-btn">Ⅱ</div>
+    </div>
+  </div>
+
+  <!-- 미션 박스 (화면 하단 중앙) -->
+  <div class="mission-box" id="mission-box" style="display:none;">
+    <div class="mission-title">MISSION</div>
+    <div class="mission-text" id="mission-text">-</div>
+    <div class="mission-progress">
+      <div class="mission-progress-fill" id="mission-progress" style="width:0%"></div>
     </div>
   </div>
 
@@ -1573,6 +1583,7 @@
   function gameOver() {
     state.running = false;
     Audio.crashSFX(); Audio.stopBGM();
+    document.getElementById('mission-box').style.display = 'none';
     const cur = Math.floor(state.score);
     const isNewBest = cur > bestScores[selectedDiff];
     if (isNewBest) {
@@ -1761,6 +1772,7 @@
 
     document.getElementById('start-screen').classList.add('hidden');
     document.getElementById('gameover').classList.remove('show');
+    document.getElementById('mission-box').style.display = 'block';
     updateHUD();
     Audio.resume();
     Audio.startBGM(0);
@@ -1769,6 +1781,7 @@
   function backToMenu() {
     state.running = false;
     Audio.stopBGM();
+    document.getElementById('mission-box').style.display = 'none';
     document.getElementById('gameover').classList.remove('show');
     document.getElementById('start-screen').classList.remove('hidden');
     // 플레이어 제자리로
