@@ -413,6 +413,60 @@
     background: #ffd54a;
     box-shadow: inset 0 -2px 0 #c67a00, 0 0 8px rgba(255,200,0,0.8);
   }
+
+  /* 일시정지 모달 */
+  #pause-modal {
+    position: absolute; inset: 0; z-index: 25;
+    background: rgba(0,0,0,0.75);
+    display: none;
+    align-items: center; justify-content: center;
+    flex-direction: column; color: #fff;
+    padding: 20px;
+  }
+  #pause-modal.show { display: flex; }
+  #pause-modal .panel {
+    background: #2a1a5e;
+    border: 4px solid #ffd54a;
+    border-radius: 12px;
+    padding: 24px 36px;
+    text-align: center;
+    box-shadow: 8px 8px 0 #000;
+  }
+  #pause-modal h2 {
+    font-size: 28px; font-weight: 900;
+    color: #ffd54a;
+    margin-bottom: 18px; letter-spacing: 4px;
+    text-shadow: 3px 3px 0 #000;
+    font-family: 'Courier New', monospace;
+  }
+  .pm-btn {
+    display: block; width: 100%;
+    margin-top: 10px;
+    padding: 10px 28px;
+    border: 3px solid #fff;
+    border-radius: 8px;
+    font-weight: 900; font-size: 14px;
+    letter-spacing: 2px; cursor: pointer;
+    font-family: 'Courier New', monospace;
+  }
+  .pm-btn.resume {
+    background: #7fff3f;
+    color: #1a3a00;
+    box-shadow: 4px 4px 0 #1a5a00;
+    text-shadow: 1px 1px 0 rgba(255,255,255,0.5);
+  }
+  .pm-btn.restart {
+    background: #ff8c1a;
+    color: #fff;
+    box-shadow: 4px 4px 0 #8b3a00;
+    text-shadow: 1px 1px 0 rgba(0,0,0,0.3);
+  }
+  .pm-btn.quit {
+    background: transparent;
+    color: rgba(255,255,255,0.8);
+    border-color: rgba(255,255,255,0.4);
+    box-shadow: none;
+  }
 </style>
 </head>
 <body>
@@ -466,6 +520,15 @@
   </div>
 
   <div id="fx-overlay"></div>
+
+  <div id="pause-modal">
+    <div class="panel">
+      <h2>PAUSED</h2>
+      <button class="pm-btn resume" id="pm-resume">▶ 계속하기</button>
+      <button class="pm-btn restart" id="pm-restart">↻ 다시 시작</button>
+      <button class="pm-btn quit" id="pm-quit">⌂ 메뉴로</button>
+    </div>
+  </div>
 
   <div id="start-screen" class="hidden">
     <h1>BLOCK DASH</h1>
@@ -1169,10 +1232,10 @@
   // ============================================
   // 🎯 장애물 스폰 (난이도 반영 + 안전 보장)
   // ============================================
-  let lastObstacleZ = -1000; // 마지막 장애물의 Z 좌표
+  let lastObstacleZ = 1000; // 마지막 장애물의 Z 좌표 (초기값 큰 양수로 → 첫 장애물 즉시 생성 가능)
 
   function canPlaceObstacle(rowZ) {
-    // 최소 간격 확보
+    // rowZ는 음수, 점점 작아짐. lastObstacleZ보다 충분히 더 작아야(멀어야) 새 장애물 가능
     const minGap = difficulty.minGapSeconds * state.speed;
     return (lastObstacleZ - rowZ) > minGap;
   }
@@ -1671,7 +1734,7 @@
     state.runTime = 0; state.distance = 0; state.goldRushTime = 0;
     state.jumpCount = 0; state.slideCount = 0;
     state.reachedStage = 1;
-    lastObstacleZ = -1000;
+    lastObstacleZ = 1000;
 
     for (const k of ['magnet','shield','boost','x2']) powerupState[k] = 0;
     updatePowerupUI();
@@ -1718,13 +1781,32 @@
   document.getElementById('play-btn').addEventListener('click', startGame);
   document.getElementById('retry-btn').addEventListener('click', startGame);
   document.getElementById('menu-btn').addEventListener('click', backToMenu);
+
+  function setPaused(on) {
+    if (!state.running) return;
+    state.paused = on;
+    document.getElementById('pause-btn').textContent = on ? '▶' : 'Ⅱ';
+    document.getElementById('pause-modal').classList.toggle('show', on);
+    if (on) Audio.stopBGM();
+    else Audio.startBGM(currentStage);
+  }
+
   document.getElementById('pause-btn').addEventListener('click', () => {
     if (!state.running) return;
-    state.paused = !state.paused;
-    document.getElementById('pause-btn').textContent = state.paused ? '▶' : 'Ⅱ';
-    if (state.paused) Audio.stopBGM();
-    else Audio.startBGM(currentStage);
+    setPaused(!state.paused);
   });
+
+  // 일시정지 모달 버튼들
+  document.getElementById('pm-resume').addEventListener('click', () => setPaused(false));
+  document.getElementById('pm-restart').addEventListener('click', () => {
+    setPaused(false);
+    startGame();
+  });
+  document.getElementById('pm-quit').addEventListener('click', () => {
+    setPaused(false);
+    backToMenu();
+  });
+
   document.getElementById('sound-btn').addEventListener('click', () => {
     Audio.setEnabled(!Audio.enabled);
     const btn = document.getElementById('sound-btn');
