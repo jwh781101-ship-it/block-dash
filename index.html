@@ -63,6 +63,18 @@
     text-shadow: 1px 1px 0 #000;
     box-shadow: 2px 2px 0 rgba(0,0,0,0.5);
   }
+  .diff-box {
+    background: #444;
+    border: 2px solid #fff;
+    border-radius: 6px;
+    padding: 3px 8px;
+    color: #fff; font-weight: 900; font-size: 11px;
+    letter-spacing: 1px;
+    text-shadow: 1px 1px 0 #000;
+  }
+  .diff-box.easy { background: #2a9a4a; }
+  .diff-box.normal { background: #dc9a2a; }
+  .diff-box.hard { background: #c03a3a; }
   .distance-text {
     color: #ffd54a; font-size: 12px; font-weight: 700;
     text-shadow: 1px 1px 0 #000;
@@ -78,7 +90,6 @@
     pointer-events: auto; cursor: pointer;
   }
 
-  /* 미션 박스 (HUD 하단) */
   .mission-box {
     margin-top: 4px;
     background: rgba(26, 10, 62, 0.85);
@@ -109,7 +120,6 @@
     box-shadow: inset 0 1px 0 rgba(255,255,255,0.4);
   }
 
-  /* 파워업 인디케이터 */
   .powerup-bar {
     position: absolute;
     top: 60px; right: 14px;
@@ -137,7 +147,6 @@
     transform-origin: left;
   }
 
-  /* 스테이지 전환 배너 */
   #stage-banner {
     position: absolute;
     top: 40%; left: 0; right: 0;
@@ -172,7 +181,6 @@
     font-family: 'Courier New', monospace;
   }
 
-  /* 미션 완료 팝업 */
   #mission-complete {
     position: absolute;
     top: 25%; left: 50%;
@@ -210,7 +218,6 @@
     font-weight: 900; text-shadow: 2px 2px 0 #000;
   }
 
-  /* 시작 화면 */
   #start-screen {
     position: absolute; inset: 0; z-index: 20;
     background: linear-gradient(180deg, #4a8adc 0%, #1a3a7a 100%);
@@ -228,7 +235,7 @@
     background-size: 40px 40px;
   }
   #start-screen h1 {
-    font-size: clamp(44px, 11vw, 78px); font-weight: 900;
+    font-size: clamp(38px, 10vw, 68px); font-weight: 900;
     color: #ffd54a;
     letter-spacing: 3px; margin-bottom: 4px;
     text-shadow: 4px 4px 0 #8b3a00, 8px 8px 0 rgba(0,0,0,0.3);
@@ -236,25 +243,25 @@
     font-family: 'Courier New', 'Trebuchet MS', monospace;
   }
   #start-screen .sub {
-    color: #fff; font-size: 13px; margin-bottom: 28px; letter-spacing: 4px;
+    color: #fff; font-size: 12px; margin-bottom: 22px; letter-spacing: 4px;
     text-shadow: 2px 2px 0 #000;
     position: relative; z-index: 1;
   }
-  .char-select { display: flex; gap: 12px; margin-bottom: 22px; position: relative; z-index: 1; }
+  .char-select { display: flex; gap: 10px; margin-bottom: 16px; position: relative; z-index: 1; }
   .char-card {
-    width: 82px; height: 100px;
+    width: 72px; height: 88px;
     background: rgba(0,0,0,0.3);
     border: 3px solid #fff;
     border-radius: 8px;
     display: flex; flex-direction: column; align-items: center; justify-content: flex-end;
-    padding-bottom: 8px; cursor: pointer;
+    padding-bottom: 6px; cursor: pointer;
     transition: transform 0.15s;
     box-shadow: 4px 4px 0 rgba(0,0,0,0.4);
   }
   .char-card .preview {
     flex: 1; width: 100%;
     display: flex; align-items: center; justify-content: center;
-    font-size: 38px;
+    font-size: 34px;
     filter: drop-shadow(0 3px 0 rgba(0,0,0,0.4));
   }
   .char-card .name {
@@ -267,8 +274,40 @@
     transform: translateY(-6px);
     box-shadow: 6px 10px 0 rgba(0,0,0,0.4);
   }
+
+  /* 난이도 선택 */
+  .diff-label {
+    color: #fff; font-size: 10px; letter-spacing: 4px;
+    margin-bottom: 6px;
+    text-shadow: 1px 1px 0 #000;
+    opacity: 0.7;
+    position: relative; z-index: 1;
+  }
+  .diff-select {
+    display: flex; gap: 8px; margin-bottom: 20px;
+    position: relative; z-index: 1;
+  }
+  .diff-btn {
+    width: 88px; height: 58px;
+    border-radius: 8px;
+    border: 3px solid #fff;
+    background: rgba(0,0,0,0.3);
+    cursor: pointer;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    box-shadow: 4px 4px 0 rgba(0,0,0,0.4);
+    transition: transform 0.15s;
+    color: #fff;
+    font-family: 'Courier New', monospace;
+  }
+  .diff-btn .diff-emoji { font-size: 18px; margin-bottom: 2px; }
+  .diff-btn .diff-name { font-size: 11px; font-weight: 900; letter-spacing: 1px; }
+  .diff-btn .diff-desc { font-size: 8px; opacity: 0.75; margin-top: 1px; }
+  .diff-btn.easy.selected { background: #2a9a4a; border-color: #7fff3f; transform: translateY(-4px); box-shadow: 5px 8px 0 rgba(0,0,0,0.4); }
+  .diff-btn.normal.selected { background: #dc9a2a; border-color: #ffd54a; transform: translateY(-4px); box-shadow: 5px 8px 0 rgba(0,0,0,0.4); }
+  .diff-btn.hard.selected { background: #c03a3a; border-color: #ff6a6a; transform: translateY(-4px); box-shadow: 5px 8px 0 rgba(0,0,0,0.4); }
+
   .play-btn {
-    padding: 14px 50px;
+    padding: 12px 46px;
     background: #ffd54a;
     border: 4px solid #fff;
     border-radius: 12px;
@@ -281,33 +320,31 @@
   }
   .play-btn:active { transform: translate(3px, 3px); box-shadow: 3px 3px 0 #8b3a00; }
 
-  /* 게임 설명 */
   .info-panel {
-    margin-top: 20px;
+    margin-top: 14px;
     display: flex;
-    gap: 16px;
+    gap: 10px;
     color: #fff;
-    font-size: 10px;
+    font-size: 9px;
     text-shadow: 1px 1px 0 #000;
     position: relative; z-index: 1;
     letter-spacing: 1px;
   }
   .info-item {
     display: flex; flex-direction: column; align-items: center;
-    padding: 6px 10px;
+    padding: 4px 8px;
     background: rgba(0,0,0,0.3);
     border-radius: 6px;
-    min-width: 60px;
+    min-width: 50px;
   }
-  .info-emoji { font-size: 18px; margin-bottom: 2px; }
+  .info-emoji { font-size: 16px; margin-bottom: 1px; }
 
   .hint {
-    position: absolute; bottom: 14px; left: 0; right: 0;
-    text-align: center; color: rgba(255,255,255,0.7); font-size: 10px; letter-spacing: 2px;
+    position: absolute; bottom: 10px; left: 0; right: 0;
+    text-align: center; color: rgba(255,255,255,0.7); font-size: 9px; letter-spacing: 2px;
     z-index: 1;
   }
 
-  /* 게임오버 */
   #gameover {
     position: absolute; inset: 0; z-index: 20;
     background: rgba(0,0,0,0.85);
@@ -347,8 +384,16 @@
     text-shadow: 1px 1px 0 rgba(255,255,255,0.5);
     font-family: 'Courier New', monospace;
   }
+  .menu-btn {
+    margin-top: 8px; padding: 8px 26px;
+    background: transparent;
+    border: 2px solid rgba(255,255,255,0.4);
+    border-radius: 8px;
+    color: rgba(255,255,255,0.8); font-weight: 700; font-size: 12px;
+    letter-spacing: 2px; cursor: pointer;
+    font-family: 'Courier New', monospace;
+  }
 
-  /* 사운드 토글 버튼 */
   .sound-btn {
     width: 40px; height: 40px; border-radius: 6px;
     background: #6a4aa0;
@@ -384,6 +429,7 @@
         <div class="multi-box" id="multi-box">×<span id="multi">1</span></div>
       </div>
       <div class="top-row">
+        <div class="diff-box normal" id="diff-display">NORMAL</div>
         <div class="stage-box">STAGE <span id="stage-num">1</span></div>
         <div class="score"><span id="score">0</span></div>
         <div class="distance-text"><span id="distance">0</span>m</div>
@@ -438,6 +484,26 @@
         <div class="name">PANDA</div>
       </div>
     </div>
+
+    <div class="diff-label">DIFFICULTY</div>
+    <div class="diff-select" id="diff-select">
+      <div class="diff-btn easy" data-diff="easy">
+        <div class="diff-emoji">🌱</div>
+        <div class="diff-name">EASY</div>
+        <div class="diff-desc">느긋하게</div>
+      </div>
+      <div class="diff-btn normal selected" data-diff="normal">
+        <div class="diff-emoji">⚔️</div>
+        <div class="diff-name">NORMAL</div>
+        <div class="diff-desc">적당히</div>
+      </div>
+      <div class="diff-btn hard" data-diff="hard">
+        <div class="diff-emoji">🔥</div>
+        <div class="diff-name">HARD</div>
+        <div class="diff-desc">빡세게</div>
+      </div>
+    </div>
+
     <button class="play-btn" id="play-btn">PLAY</button>
     <div class="info-panel">
       <div class="info-item"><div class="info-emoji">🧲</div>MAGNET</div>
@@ -452,11 +518,12 @@
     <div class="panel">
       <h2>GAME OVER</h2>
       <div class="stat">SCORE <b id="final-score">0</b><div class="best-label" id="best-label" style="display:none;">NEW BEST!</div></div>
-      <div class="stat">BEST <b id="best-score">0</b></div>
+      <div class="stat">BEST (<span id="final-diff">NORMAL</span>) <b id="best-score">0</b></div>
       <div class="stat">GOLD <b id="final-coins">0</b></div>
       <div class="stat">DISTANCE <b id="final-dist">0m</b></div>
       <div class="stat">STAGE REACHED <b id="final-stage">1</b></div>
       <button class="retry-btn" id="retry-btn">RETRY</button>
+      <button class="menu-btn" id="menu-btn">MENU</button>
     </div>
   </div>
 </div>
@@ -480,18 +547,11 @@
   try {
 
   // ============================================
-  // 🎵 Web Audio 사운드 엔진 (칩튠 BGM + 효과음)
+  // 🎵 Web Audio 사운드 엔진
   // ============================================
   const Audio = {
-    ctx: null,
-    masterGain: null,
-    bgmGain: null,
-    sfxGain: null,
-    enabled: true,
-    bgmPlaying: false,
-    bgmTimer: null,
-    currentStageIdx: 0,
-
+    ctx: null, masterGain: null, bgmGain: null, sfxGain: null,
+    enabled: true, bgmPlaying: false, bgmTimer: null, currentStageIdx: 0,
     init() {
       if (this.ctx) return;
       try {
@@ -505,55 +565,31 @@
         this.sfxGain = this.ctx.createGain();
         this.sfxGain.gain.value = 0.6;
         this.sfxGain.connect(this.masterGain);
-      } catch (e) {
-        console.warn('Audio not supported', e);
-      }
+      } catch (e) {}
     },
-
-    resume() {
-      if (this.ctx && this.ctx.state === 'suspended') {
-        this.ctx.resume();
-      }
-    },
-
-    // 단일 음 재생 (효과음용)
-    beep(freq, duration, type, volume, destGain) {
+    resume() { if (this.ctx && this.ctx.state === 'suspended') this.ctx.resume(); },
+    beep(freq, duration, type, volume) {
       if (!this.ctx || !this.enabled) return;
-      type = type || 'square';
-      volume = volume || 0.3;
-      destGain = destGain || this.sfxGain;
-
-      const osc = this.ctx.createOscillator();
-      const gain = this.ctx.createGain();
-      osc.type = type;
-      osc.frequency.value = freq;
+      type = type || 'square'; volume = volume || 0.3;
+      const osc = this.ctx.createOscillator(), gain = this.ctx.createGain();
+      osc.type = type; osc.frequency.value = freq;
       gain.gain.setValueAtTime(volume, this.ctx.currentTime);
       gain.gain.exponentialRampToValueAtTime(0.001, this.ctx.currentTime + duration);
-      osc.connect(gain);
-      gain.connect(destGain);
-      osc.start();
-      osc.stop(this.ctx.currentTime + duration);
+      osc.connect(gain); gain.connect(this.sfxGain);
+      osc.start(); osc.stop(this.ctx.currentTime + duration);
     },
-
-    // 주파수 슬라이드 (점프, 수집)
     slide(from, to, duration, type, volume) {
       if (!this.ctx || !this.enabled) return;
-      type = type || 'square';
-      volume = volume || 0.25;
-      const osc = this.ctx.createOscillator();
-      const gain = this.ctx.createGain();
+      type = type || 'square'; volume = volume || 0.25;
+      const osc = this.ctx.createOscillator(), gain = this.ctx.createGain();
       osc.type = type;
       osc.frequency.setValueAtTime(from, this.ctx.currentTime);
       osc.frequency.exponentialRampToValueAtTime(to, this.ctx.currentTime + duration);
       gain.gain.setValueAtTime(volume, this.ctx.currentTime);
       gain.gain.exponentialRampToValueAtTime(0.001, this.ctx.currentTime + duration);
-      osc.connect(gain);
-      gain.connect(this.sfxGain);
-      osc.start();
-      osc.stop(this.ctx.currentTime + duration);
+      osc.connect(gain); gain.connect(this.sfxGain);
+      osc.start(); osc.stop(this.ctx.currentTime + duration);
     },
-
-    // 효과음 프리셋
     coinSFX() { this.slide(880, 1320, 0.1, 'square', 0.2); },
     jumpSFX() { this.slide(440, 880, 0.15, 'triangle', 0.25); },
     slideSFX() { this.slide(600, 200, 0.2, 'sawtooth', 0.2); },
@@ -575,218 +611,109 @@
       notes.forEach((f, i) => setTimeout(() => this.beep(f, 0.2, 'triangle', 0.3), i * 120));
     },
     multiBumpSFX() { this.slide(660, 990, 0.1, 'square', 0.2); },
-
-    // ============================
-    // BGM (스테이지별 칩튠 루프)
-    // ============================
-    // 스테이지별 멜로디 (음계 반음 단위, null = 쉼)
-    // 4/4박자, 각 스텝은 1/8박
     bgmTracks: [
-      // GRASSLAND - 경쾌한 C메이저
-      {
-        tempo: 130,
-        baseOct: 4,
-        melody: [60, 64, 67, 64, 60, 64, 67, 72, 71, 67, 64, 67, 65, 62, 60, null,
-                 60, 64, 67, 64, 60, 64, 67, 72, 74, 72, 71, 69, 67, 64, 60, null],
-        bass: [48, null, 48, null, 55, null, 55, null, 53, null, 53, null, 50, null, 50, null,
-               48, null, 48, null, 55, null, 55, null, 53, null, 53, null, 50, null, 48, null]
-      },
-      // DESERT - 이국적 단조 (D minor)
-      {
-        tempo: 110,
-        baseOct: 4,
-        melody: [62, 65, 69, 65, 62, 65, 69, 74, 72, 69, 65, 69, 67, 65, 62, null,
-                 62, 65, 69, 65, 62, 65, 69, 74, 75, 74, 72, 70, 69, 65, 62, null],
-        bass: [50, null, 50, null, 57, null, 57, null, 55, null, 55, null, 53, null, 50, null,
-               50, null, 50, null, 57, null, 57, null, 55, null, 55, null, 53, null, 50, null]
-      },
-      // SNOWFIELD - 잔잔한 하이키
-      {
-        tempo: 100,
-        baseOct: 5,
-        melody: [72, 76, 79, 76, 74, 72, 74, 76, 77, 76, 74, 72, 74, 72, 67, null,
-                 72, 76, 79, 81, 79, 76, 74, 76, 77, 79, 77, 76, 74, 72, 67, null],
-        bass: [60, null, 60, null, 67, null, 67, null, 65, null, 65, null, 62, null, 60, null,
-               60, null, 60, null, 67, null, 67, null, 65, null, 65, null, 62, null, 60, null]
-      },
-      // JUNGLE - 타악기적 리듬
-      {
-        tempo: 140,
-        baseOct: 4,
-        melody: [64, null, 67, 64, 62, null, 64, null, 67, null, 69, 67, 64, null, 62, null,
-                 64, 67, 69, 72, 71, 69, 67, 64, 67, 69, 72, null, 67, 64, 62, null],
-        bass: [52, null, 59, null, 52, null, 59, null, 52, null, 59, null, 52, null, 59, null,
-               52, null, 59, null, 52, null, 59, null, 52, null, 59, null, 52, null, 57, null]
-      },
-      // VOLCANO - 긴장감 (F# minor)
-      {
-        tempo: 125,
-        baseOct: 4,
-        melody: [66, 69, 73, 69, 66, 69, 73, 78, 76, 73, 69, 73, 71, 69, 66, null,
-                 66, 69, 73, 69, 66, 69, 73, 78, 80, 78, 76, 74, 73, 69, 66, null],
-        bass: [54, null, 54, null, 61, null, 61, null, 59, null, 59, null, 57, null, 54, null,
-               54, null, 54, null, 61, null, 61, null, 59, null, 59, null, 57, null, 54, null]
-      },
-      // NIGHT CITY - 신스웨이브 (A minor)
-      {
-        tempo: 115,
-        baseOct: 4,
-        melody: [69, 72, 76, 79, 76, 72, 69, 72, 74, 72, 69, 67, 65, 67, 69, null,
-                 69, 72, 76, 79, 81, 79, 76, 72, 74, 76, 72, 69, 67, 69, 65, null],
-        bass: [57, null, 57, null, 64, null, 64, null, 62, null, 62, null, 60, null, 57, null,
-               57, null, 57, null, 64, null, 64, null, 62, null, 62, null, 60, null, 57, null]
-      }
+      { tempo: 130, melody: [60,64,67,64,60,64,67,72,71,67,64,67,65,62,60,null,60,64,67,64,60,64,67,72,74,72,71,69,67,64,60,null], bass: [48,null,48,null,55,null,55,null,53,null,53,null,50,null,50,null,48,null,48,null,55,null,55,null,53,null,53,null,50,null,48,null] },
+      { tempo: 110, melody: [62,65,69,65,62,65,69,74,72,69,65,69,67,65,62,null,62,65,69,65,62,65,69,74,75,74,72,70,69,65,62,null], bass: [50,null,50,null,57,null,57,null,55,null,55,null,53,null,50,null,50,null,50,null,57,null,57,null,55,null,55,null,53,null,50,null] },
+      { tempo: 100, melody: [72,76,79,76,74,72,74,76,77,76,74,72,74,72,67,null,72,76,79,81,79,76,74,76,77,79,77,76,74,72,67,null], bass: [60,null,60,null,67,null,67,null,65,null,65,null,62,null,60,null,60,null,60,null,67,null,67,null,65,null,65,null,62,null,60,null] },
+      { tempo: 140, melody: [64,null,67,64,62,null,64,null,67,null,69,67,64,null,62,null,64,67,69,72,71,69,67,64,67,69,72,null,67,64,62,null], bass: [52,null,59,null,52,null,59,null,52,null,59,null,52,null,59,null,52,null,59,null,52,null,59,null,52,null,59,null,52,null,57,null] },
+      { tempo: 125, melody: [66,69,73,69,66,69,73,78,76,73,69,73,71,69,66,null,66,69,73,69,66,69,73,78,80,78,76,74,73,69,66,null], bass: [54,null,54,null,61,null,61,null,59,null,59,null,57,null,54,null,54,null,54,null,61,null,61,null,59,null,59,null,57,null,54,null] },
+      { tempo: 115, melody: [69,72,76,79,76,72,69,72,74,72,69,67,65,67,69,null,69,72,76,79,81,79,76,72,74,76,72,69,67,69,65,null], bass: [57,null,57,null,64,null,64,null,62,null,62,null,60,null,57,null,57,null,57,null,64,null,64,null,62,null,62,null,60,null,57,null] }
     ],
-
-    midiToFreq(midi) {
-      return 440 * Math.pow(2, (midi - 69) / 12);
-    },
-
-    playBGMNote(midiNote, duration, type, gain) {
-      if (!this.ctx || !this.enabled || midiNote === null) return;
-      const osc = this.ctx.createOscillator();
-      const envGain = this.ctx.createGain();
-      osc.type = type;
-      osc.frequency.value = this.midiToFreq(midiNote);
+    midiToFreq(m) { return 440 * Math.pow(2, (m - 69) / 12); },
+    playBGMNote(midi, duration, type, gain) {
+      if (!this.ctx || !this.enabled || midi === null) return;
+      const osc = this.ctx.createOscillator(), envGain = this.ctx.createGain();
+      osc.type = type; osc.frequency.value = this.midiToFreq(midi);
       envGain.gain.setValueAtTime(0, this.ctx.currentTime);
       envGain.gain.linearRampToValueAtTime(gain, this.ctx.currentTime + 0.01);
       envGain.gain.setValueAtTime(gain, this.ctx.currentTime + duration * 0.7);
       envGain.gain.exponentialRampToValueAtTime(0.001, this.ctx.currentTime + duration);
-      osc.connect(envGain);
-      envGain.connect(this.bgmGain);
-      osc.start();
-      osc.stop(this.ctx.currentTime + duration);
+      osc.connect(envGain); envGain.connect(this.bgmGain);
+      osc.start(); osc.stop(this.ctx.currentTime + duration);
     },
-
-    stopBGM() {
-      if (this.bgmTimer) {
-        clearTimeout(this.bgmTimer);
-        this.bgmTimer = null;
-      }
-      this.bgmPlaying = false;
-    },
-
-    startBGM(stageIdx) {
-      this.stopBGM();
-      if (!this.ctx || !this.enabled) return;
-      this.currentStageIdx = stageIdx;
-      this.bgmPlaying = true;
-      this.scheduleBGMLoop();
-    },
-
+    stopBGM() { if (this.bgmTimer) { clearTimeout(this.bgmTimer); this.bgmTimer = null; } this.bgmPlaying = false; },
+    startBGM(idx) { this.stopBGM(); if (!this.ctx || !this.enabled) return; this.currentStageIdx = idx; this.bgmPlaying = true; this.scheduleBGMLoop(); },
     scheduleBGMLoop() {
       if (!this.bgmPlaying || !this.enabled) return;
       const track = this.bgmTracks[this.currentStageIdx % this.bgmTracks.length];
-      const stepDuration = 60 / track.tempo / 2; // 1/8 note in seconds
+      const stepDuration = 60 / track.tempo / 2;
       let stepIndex = 0;
-
       const playStep = () => {
         if (!this.bgmPlaying) return;
-        const melodyNote = track.melody[stepIndex % track.melody.length];
-        const bassNote = track.bass[stepIndex % track.bass.length];
-
-        if (melodyNote !== null) {
-          this.playBGMNote(melodyNote, stepDuration * 1.5, 'square', 0.15);
-        }
-        if (bassNote !== null) {
-          this.playBGMNote(bassNote, stepDuration * 2, 'triangle', 0.2);
-        }
-        // 드럼 느낌 (저음 노이즈)
-        if (stepIndex % 4 === 0) {
-          this.playBGMNote(36, stepDuration * 0.3, 'sawtooth', 0.15);
-        } else if (stepIndex % 4 === 2) {
-          this.playBGMNote(48, stepDuration * 0.2, 'square', 0.1);
-        }
-
+        const m = track.melody[stepIndex % track.melody.length];
+        const b = track.bass[stepIndex % track.bass.length];
+        if (m !== null) this.playBGMNote(m, stepDuration * 1.5, 'square', 0.15);
+        if (b !== null) this.playBGMNote(b, stepDuration * 2, 'triangle', 0.2);
+        if (stepIndex % 4 === 0) this.playBGMNote(36, stepDuration * 0.3, 'sawtooth', 0.15);
+        else if (stepIndex % 4 === 2) this.playBGMNote(48, stepDuration * 0.2, 'square', 0.1);
         stepIndex++;
         this.bgmTimer = setTimeout(playStep, stepDuration * 1000);
       };
       playStep();
     },
-
-    setEnabled(on) {
-      this.enabled = on;
-      if (!on) this.stopBGM();
-    }
+    setEnabled(on) { this.enabled = on; if (!on) this.stopBGM(); }
   };
-
   Audio.init();
 
   // ============================================
-  // 스테이지 정의 (6개 순환)
+  // 🎮 난이도 설정
+  // ============================================
+  const DIFFICULTIES = {
+    easy: {
+      name: 'EASY',
+      baseSpeed: 10,
+      maxSpeed: 20,
+      speedRamp: 0.15,          // 초당 속도 증가
+      obstacleRate: 0.22,       // 장애물 스폰 확률
+      doubleObstacleRate: 0.12, // 2개 동시 확률
+      goldenSpawnAfter: 12,
+      powerupRate: 0.04,        // 파워업 확률 up
+      powerupAfter: 10,
+      minGapSeconds: 1.8,       // 장애물간 최소 간격(초)
+      startDelaySeconds: 4      // 시작 후 장애물 지연
+    },
+    normal: {
+      name: 'NORMAL',
+      baseSpeed: 12,
+      maxSpeed: 26,
+      speedRamp: 0.22,
+      obstacleRate: 0.34,
+      doubleObstacleRate: 0.28,
+      goldenSpawnAfter: 10,
+      powerupRate: 0.028,
+      powerupAfter: 15,
+      minGapSeconds: 1.3,
+      startDelaySeconds: 3
+    },
+    hard: {
+      name: 'HARD',
+      baseSpeed: 13,
+      maxSpeed: 30,
+      speedRamp: 0.32,
+      obstacleRate: 0.45,
+      doubleObstacleRate: 0.42,
+      goldenSpawnAfter: 8,
+      powerupRate: 0.02,
+      powerupAfter: 20,
+      minGapSeconds: 1.0,
+      startDelaySeconds: 2
+    }
+  };
+  let selectedDiff = 'normal';
+  let difficulty = DIFFICULTIES[selectedDiff];
+
+  // ============================================
+  // 스테이지 정의
   // ============================================
   const STAGES = [
-    {
-      name: 'GRASSLAND',
-      sky: 0x6ba8c8,
-      fog: 0x7ab8cc,
-      track: [0x6e5a44, 0x5e4a34],
-      grass: [0x4a7838, 0x3e6a2e],
-      trunk: 0x8a5030,
-      leaves: [0x3a7828, 0x4a8a38, 0x2e6820],
-      mountain: [0x5a4a78, 0x4a3a68],
-      ambient: 0.5, sun: 0.9
-    },
-    {
-      name: 'DESERT',
-      sky: 0xe8b870,
-      fog: 0xdcaa68,
-      track: [0x8a6a3a, 0x7a5a2e],
-      grass: [0xc89060, 0xb87e50],
-      trunk: 0x6a4020,
-      leaves: [0x4a7028, 0x5a8038, 0x3a6020],
-      mountain: [0x8a5830, 0x6a4428],
-      ambient: 0.55, sun: 1.0
-    },
-    {
-      name: 'SNOWFIELD',
-      sky: 0xa8c8e8,
-      fog: 0xccd8e8,
-      track: [0xd4d8e0, 0xbec4d0],
-      grass: [0xeaf0f4, 0xd8dee4],
-      trunk: 0x5a4a38,
-      leaves: [0xe8f4f8, 0xd0dce0, 0xc0ccd0],
-      mountain: [0x8a98b0, 0x6a7890],
-      ambient: 0.6, sun: 1.0
-    },
-    {
-      name: 'JUNGLE',
-      sky: 0x4a7a68,
-      fog: 0x5a8a78,
-      track: [0x5a4828, 0x4a3820],
-      grass: [0x2a6028, 0x1e4e1e],
-      trunk: 0x4a2e18,
-      leaves: [0x1a6828, 0x2a7838, 0x0e5018],
-      mountain: [0x3a5a48, 0x2a4a38],
-      ambient: 0.45, sun: 0.85
-    },
-    {
-      name: 'VOLCANO',
-      sky: 0x8a3828,
-      fog: 0x9a4838,
-      track: [0x3a2820, 0x2a1810],
-      grass: [0x5a2010, 0x4a1808],
-      trunk: 0x2a1408,
-      leaves: [0x6a2818, 0x7a3828, 0x5a1c0e],
-      mountain: [0x5a1818, 0x3a0808],
-      ambient: 0.5, sun: 0.95,
-      emberColor: 0xff6a1a
-    },
-    {
-      name: 'NIGHT CITY',
-      sky: 0x1a1a4a,
-      fog: 0x2a2a5a,
-      track: [0x2a2a3a, 0x1a1a2a],
-      grass: [0x3a3a4a, 0x2a2a3a],
-      trunk: 0x1a1a2a,
-      leaves: [0x3a4a6a, 0x2a3a5a, 0x4a5a7a],
-      mountain: [0x1a2a4a, 0x0a1a3a],
-      ambient: 0.4, sun: 0.7,
-      neonColor: 0xff4a9a
-    }
+    { name:'GRASSLAND', sky:0x6ba8c8, fog:0x7ab8cc, track:[0x6e5a44,0x5e4a34], grass:[0x4a7838,0x3e6a2e], trunk:0x8a5030, leaves:[0x3a7828,0x4a8a38,0x2e6820], mountain:[0x5a4a78,0x4a3a68], ambient:0.5, sun:0.9 },
+    { name:'DESERT', sky:0xe8b870, fog:0xdcaa68, track:[0x8a6a3a,0x7a5a2e], grass:[0xc89060,0xb87e50], trunk:0x6a4020, leaves:[0x4a7028,0x5a8038,0x3a6020], mountain:[0x8a5830,0x6a4428], ambient:0.55, sun:1.0 },
+    { name:'SNOWFIELD', sky:0xa8c8e8, fog:0xccd8e8, track:[0xd4d8e0,0xbec4d0], grass:[0xeaf0f4,0xd8dee4], trunk:0x5a4a38, leaves:[0xe8f4f8,0xd0dce0,0xc0ccd0], mountain:[0x8a98b0,0x6a7890], ambient:0.6, sun:1.0 },
+    { name:'JUNGLE', sky:0x4a7a68, fog:0x5a8a78, track:[0x5a4828,0x4a3820], grass:[0x2a6028,0x1e4e1e], trunk:0x4a2e18, leaves:[0x1a6828,0x2a7838,0x0e5018], mountain:[0x3a5a48,0x2a4a38], ambient:0.45, sun:0.85 },
+    { name:'VOLCANO', sky:0x8a3828, fog:0x9a4838, track:[0x3a2820,0x2a1810], grass:[0x5a2010,0x4a1808], trunk:0x2a1408, leaves:[0x6a2818,0x7a3828,0x5a1c0e], mountain:[0x5a1818,0x3a0808], ambient:0.5, sun:0.95 },
+    { name:'NIGHT CITY', sky:0x1a1a4a, fog:0x2a2a5a, track:[0x2a2a3a,0x1a1a2a], grass:[0x3a3a4a,0x2a2a3a], trunk:0x1a1a2a, leaves:[0x3a4a6a,0x2a3a5a,0x4a5a7a], mountain:[0x1a2a4a,0x0a1a3a], ambient:0.4, sun:0.7 }
   ];
-
-  const STAGE_DISTANCE = 500; // 500m마다 전환
+  const STAGE_DISTANCE = 500;
 
   const scene = new THREE.Scene();
   let currentStage = 0;
@@ -810,7 +737,6 @@
     renderer.setSize(window.innerWidth, window.innerHeight);
   });
 
-  // 조명
   const ambient = new THREE.AmbientLight(0xffffff, STAGES[0].ambient);
   scene.add(ambient);
   const sun = new THREE.DirectionalLight(0xfff4d6, STAGES[0].sun);
@@ -825,13 +751,8 @@
   const hemi = new THREE.HemisphereLight(0xaac4dc, 0x5a4a3a, 0.35);
   scene.add(hemi);
 
-  function flatMat(color) {
-    return new THREE.MeshStandardMaterial({
-      color: color, roughness: 1, flatShading: true
-    });
-  }
+  function flatMat(color) { return new THREE.MeshStandardMaterial({ color, roughness: 1, flatShading: true }); }
 
-  // ============ 트랙 ============
   const LANE_X = [-1.8, 0, 1.8];
   const SEGMENT_LENGTH = 12;
   const SEGMENT_COUNT = 6;
@@ -842,52 +763,33 @@
     const stage = STAGES[currentStage];
     const trackMat = flatMat(stage.track[0]);
     const trackMatAlt = flatMat(stage.track[1]);
-
     for (let row = 0; row < 6; row++) {
       for (let col = 0; col < 3; col++) {
         const isAlt = (row + col) % 2 === 0;
-        const block = new THREE.Mesh(
-          new THREE.BoxGeometry(2, 0.3, 2),
-          isAlt ? trackMat : trackMatAlt
-        );
-        block.position.set(
-          -2 + col * 2,
-          -0.15,
-          -SEGMENT_LENGTH/2 + 1 + row * 2
-        );
+        const block = new THREE.Mesh(new THREE.BoxGeometry(2, 0.3, 2), isAlt ? trackMat : trackMatAlt);
+        block.position.set(-2 + col * 2, -0.15, -SEGMENT_LENGTH/2 + 1 + row * 2);
         block.receiveShadow = true;
         group.add(block);
       }
     }
-
     for (let side = -1; side <= 1; side += 2) {
       for (let r = 0; r < 6; r++) {
         const grassShade = Math.random() > 0.5 ? stage.grass[0] : stage.grass[1];
-        const grass = new THREE.Mesh(
-          new THREE.BoxGeometry(4, 0.4, 2),
-          flatMat(grassShade)
-        );
+        const grass = new THREE.Mesh(new THREE.BoxGeometry(4, 0.4, 2), flatMat(grassShade));
         grass.position.set(side * 5, -0.1, -SEGMENT_LENGTH/2 + 1 + r * 2);
-        grass.receiveShadow = true;
-        grass.castShadow = true;
+        grass.receiveShadow = true; grass.castShadow = true;
         group.add(grass);
       }
       const decorCount = 2 + Math.floor(Math.random() * 2);
       for (let d = 0; d < decorCount; d++) {
-        const decorType = Math.random();
-        let decor;
-        if (decorType < 0.6) decor = createTree(stage);
-        else if (decorType < 0.85) decor = createBush(stage);
+        const dt = Math.random(); let decor;
+        if (dt < 0.6) decor = createTree(stage);
+        else if (dt < 0.85) decor = createBush(stage);
         else decor = createFlower(stage);
-        decor.position.set(
-          side * (4 + Math.random() * 2),
-          0,
-          -SEGMENT_LENGTH/2 + Math.random() * SEGMENT_LENGTH
-        );
+        decor.position.set(side * (4 + Math.random() * 2), 0, -SEGMENT_LENGTH/2 + Math.random() * SEGMENT_LENGTH);
         group.add(decor);
       }
     }
-
     group.position.z = z;
     scene.add(group);
     return group;
@@ -895,76 +797,39 @@
 
   function createTree(stage) {
     const g = new THREE.Group();
-    const trunkHeight = 0.8 + Math.random() * 0.4;
-    const trunk = new THREE.Mesh(
-      new THREE.BoxGeometry(0.35, trunkHeight, 0.35),
-      flatMat(stage.trunk)
-    );
-    trunk.position.y = trunkHeight / 2 + 0.1;
-    trunk.castShadow = true;
-    g.add(trunk);
-
-    const leafColor = stage.leaves[Math.floor(Math.random() * stage.leaves.length)];
-    const leafMat = flatMat(leafColor);
-    const foliageSize = 0.8 + Math.random() * 0.3;
-    const foliage = new THREE.Mesh(
-      new THREE.BoxGeometry(foliageSize, foliageSize, foliageSize),
-      leafMat
-    );
-    foliage.position.y = trunkHeight + 0.3 + foliageSize / 2;
-    foliage.rotation.y = Math.random() * Math.PI;
-    foliage.castShadow = true;
-    g.add(foliage);
+    const th = 0.8 + Math.random() * 0.4;
+    const trunk = new THREE.Mesh(new THREE.BoxGeometry(0.35, th, 0.35), flatMat(stage.trunk));
+    trunk.position.y = th / 2 + 0.1; trunk.castShadow = true; g.add(trunk);
+    const lc = stage.leaves[Math.floor(Math.random() * stage.leaves.length)];
+    const lm = flatMat(lc);
+    const fs = 0.8 + Math.random() * 0.3;
+    const f = new THREE.Mesh(new THREE.BoxGeometry(fs, fs, fs), lm);
+    f.position.y = th + 0.3 + fs/2; f.rotation.y = Math.random() * Math.PI; f.castShadow = true; g.add(f);
     if (Math.random() > 0.5) {
-      const foliage2 = new THREE.Mesh(
-        new THREE.BoxGeometry(foliageSize * 0.7, foliageSize * 0.7, foliageSize * 0.7),
-        leafMat
-      );
-      foliage2.position.set(
-        (Math.random() - 0.5) * 0.4,
-        trunkHeight + 0.5 + foliageSize,
-        (Math.random() - 0.5) * 0.4
-      );
-      foliage2.rotation.y = Math.random() * Math.PI;
-      foliage2.castShadow = true;
-      g.add(foliage2);
+      const f2 = new THREE.Mesh(new THREE.BoxGeometry(fs*0.7, fs*0.7, fs*0.7), lm);
+      f2.position.set((Math.random()-0.5)*0.4, th+0.5+fs, (Math.random()-0.5)*0.4);
+      f2.rotation.y = Math.random() * Math.PI; f2.castShadow = true; g.add(f2);
     }
     return g;
   }
-
   function createBush(stage) {
     const g = new THREE.Group();
-    const mat = flatMat(stage.grass[0]);
+    const m = flatMat(stage.grass[0]);
     for (let i = 0; i < 3; i++) {
-      const size = 0.35 + Math.random() * 0.15;
-      const cube = new THREE.Mesh(new THREE.BoxGeometry(size, size, size), mat);
-      cube.position.set(
-        (Math.random() - 0.5) * 0.5,
-        size / 2 + 0.1,
-        (Math.random() - 0.5) * 0.5
-      );
-      cube.rotation.y = Math.random() * Math.PI;
-      cube.castShadow = true;
-      g.add(cube);
+      const s = 0.35 + Math.random() * 0.15;
+      const c = new THREE.Mesh(new THREE.BoxGeometry(s, s, s), m);
+      c.position.set((Math.random()-0.5)*0.5, s/2+0.1, (Math.random()-0.5)*0.5);
+      c.rotation.y = Math.random() * Math.PI; c.castShadow = true; g.add(c);
     }
     return g;
   }
-
   function createFlower(stage) {
     const g = new THREE.Group();
-    const stem = new THREE.Mesh(
-      new THREE.BoxGeometry(0.05, 0.3, 0.05),
-      flatMat(0x3a6a2a)
-    );
-    stem.position.y = 0.25;
-    g.add(stem);
-    const colors = [0xd85a82, 0xdcb440, 0xd47a34, 0x8a5abb];
-    const petal = new THREE.Mesh(
-      new THREE.BoxGeometry(0.18, 0.12, 0.18),
-      flatMat(colors[Math.floor(Math.random() * colors.length)])
-    );
-    petal.position.y = 0.42;
-    g.add(petal);
+    const st = new THREE.Mesh(new THREE.BoxGeometry(0.05, 0.3, 0.05), flatMat(0x3a6a2a));
+    st.position.y = 0.25; g.add(st);
+    const cs = [0xd85a82, 0xdcb440, 0xd47a34, 0x8a5abb];
+    const p = new THREE.Mesh(new THREE.BoxGeometry(0.18, 0.12, 0.18), flatMat(cs[Math.floor(Math.random()*cs.length)]));
+    p.position.y = 0.42; g.add(p);
     return g;
   }
 
@@ -972,232 +837,157 @@
     segments.push(createSegment(-i * SEGMENT_LENGTH + SEGMENT_LENGTH));
   }
 
-  // 구름
   const clouds = [];
   function createCloud() {
     const g = new THREE.Group();
-    const mat = flatMat(0xe4ecf0);
+    const m = flatMat(0xe4ecf0);
     for (let i = 0; i < 4; i++) {
-      const size = 0.6 + Math.random() * 0.5;
-      const cube = new THREE.Mesh(new THREE.BoxGeometry(size, size * 0.8, size), mat);
-      cube.position.set(i * 0.7 - 1, (Math.random() - 0.5) * 0.3, 0);
-      g.add(cube);
+      const s = 0.6 + Math.random() * 0.5;
+      const c = new THREE.Mesh(new THREE.BoxGeometry(s, s*0.8, s), m);
+      c.position.set(i*0.7-1, (Math.random()-0.5)*0.3, 0);
+      g.add(c);
     }
     return g;
   }
   for (let i = 0; i < 6; i++) {
     const c = createCloud();
-    c.position.set((Math.random() - 0.5) * 50, 9 + Math.random() * 4, -25 - Math.random() * 30);
+    c.position.set((Math.random()-0.5)*50, 9+Math.random()*4, -25-Math.random()*30);
     c.userData.speed = 0.4 + Math.random() * 0.3;
-    scene.add(c);
-    clouds.push(c);
+    scene.add(c); clouds.push(c);
   }
 
-  // 배경 산
   const mountains = [];
   function createMountains() {
-    // 기존 산 제거
     for (const m of mountains) scene.remove(m);
     mountains.length = 0;
     const stage = STAGES[currentStage];
-    const mountainMat = flatMat(stage.mountain[0]);
-    const mountainMat2 = flatMat(stage.mountain[1]);
+    const mm = flatMat(stage.mountain[0]);
+    const mm2 = flatMat(stage.mountain[1]);
     for (let i = 0; i < 15; i++) {
-      const size = 3 + Math.random() * 5;
-      const mountain = new THREE.Mesh(
-        new THREE.ConeGeometry(size, size * 1.2, 4),
-        Math.random() > 0.5 ? mountainMat : mountainMat2
-      );
-      mountain.position.set(
-        (Math.random() - 0.5) * 80,
-        size * 0.6 - 1,
-        -40 - Math.random() * 25
-      );
-      mountain.rotation.y = Math.random() * Math.PI;
-      scene.add(mountain);
-      mountains.push(mountain);
+      const s = 3 + Math.random() * 5;
+      const m = new THREE.Mesh(new THREE.ConeGeometry(s, s*1.2, 4), Math.random()>0.5?mm:mm2);
+      m.position.set((Math.random()-0.5)*80, s*0.6-1, -40-Math.random()*25);
+      m.rotation.y = Math.random() * Math.PI;
+      scene.add(m); mountains.push(m);
     }
   }
   createMountains();
 
-  // ============================================
-  // 스테이지 전환
-  // ============================================
   function transitionToStage(idx) {
-    const newStage = idx % STAGES.length;
-    currentStage = newStage;
-    const stage = STAGES[newStage];
-
+    const ns = idx % STAGES.length;
+    currentStage = ns;
+    const stage = STAGES[ns];
     scene.background = new THREE.Color(stage.sky);
     scene.fog = new THREE.Fog(stage.fog, 30, 85);
     ambient.intensity = stage.ambient;
     sun.intensity = stage.sun;
-
-    // 세그먼트 다시 생성
     for (const seg of segments) scene.remove(seg);
     segments.length = 0;
     for (let i = 0; i < SEGMENT_COUNT; i++) {
       segments.push(createSegment(-i * SEGMENT_LENGTH + SEGMENT_LENGTH));
     }
-
-    // 산도 다시
     createMountains();
-
-    // 배너 표시
-    document.getElementById('banner-num').textContent = newStage + 1;
+    document.getElementById('banner-num').textContent = ns + 1;
     document.getElementById('banner-name').textContent = stage.name;
-    const banner = document.getElementById('stage-banner');
-    banner.classList.remove('show');
-    void banner.offsetWidth;
-    banner.classList.add('show');
-    setTimeout(() => banner.classList.remove('show'), 2000);
-
-    // HUD 스테이지 번호
-    document.getElementById('stage-num').textContent = newStage + 1;
-
-    // BGM & 효과음 전환
+    const b = document.getElementById('stage-banner');
+    b.classList.remove('show'); void b.offsetWidth; b.classList.add('show');
+    setTimeout(() => b.classList.remove('show'), 2000);
+    document.getElementById('stage-num').textContent = ns + 1;
     Audio.stageSFX();
     if (Audio.bgmPlaying || state.running) {
-      setTimeout(() => Audio.startBGM(newStage), 700);
+      setTimeout(() => Audio.startBGM(ns), 700);
     }
   }
 
   // ============================================
-  // 캐릭터 (이전과 동일)
+  // 캐릭터
   // ============================================
   function createCharacter(type) {
     const group = new THREE.Group();
     const schemes = [
-      { body: 0xffd54a, belly: 0xfff0a0, beak: 0xff8a1a, foot: 0xff8a1a, accent: 0xff6a00, eye: 0x1a0a1a },
-      { body: 0x5abf4a, belly: 0xe8f8a0, beak: 0xff8a9a, foot: 0x4aa038, accent: 0x3a8028, eye: 0x1a0a1a },
-      { body: 0xffffff, belly: 0xffffff, beak: 0x2a2a2a, foot: 0x2a2a2a, accent: 0x2a2a2a, eye: 0x1a0a1a }
+      { body:0xffd54a, belly:0xfff0a0, beak:0xff8a1a, foot:0xff8a1a, accent:0xff6a00, eye:0x1a0a1a },
+      { body:0x5abf4a, belly:0xe8f8a0, beak:0xff8a9a, foot:0x4aa038, accent:0x3a8028, eye:0x1a0a1a },
+      { body:0xffffff, belly:0xffffff, beak:0x2a2a2a, foot:0x2a2a2a, accent:0x2a2a2a, eye:0x1a0a1a }
     ];
     const s = schemes[type];
-    const bodyMat = flatMat(s.body);
-    const bellyMat = flatMat(s.belly);
-    const accentMat = flatMat(s.accent);
-    const footMat = flatMat(s.foot);
-    const beakMat = flatMat(s.beak);
-    const eyeMat = flatMat(s.eye);
-    const whiteMat = flatMat(0xffffff);
+    const bodyMat = flatMat(s.body), bellyMat = flatMat(s.belly), accentMat = flatMat(s.accent);
+    const footMat = flatMat(s.foot), beakMat = flatMat(s.beak), eyeMat = flatMat(s.eye), whiteMat = flatMat(0xffffff);
 
     const body = new THREE.Mesh(new THREE.BoxGeometry(0.65, 0.55, 0.5), bodyMat);
-    body.position.y = 0.55;
-    body.castShadow = true;
-    group.add(body);
-
+    body.position.y = 0.55; body.castShadow = true; group.add(body);
     const belly = new THREE.Mesh(new THREE.BoxGeometry(0.45, 0.4, 0.06), bellyMat);
-    belly.position.set(0, 0.5, 0.28);
-    group.add(belly);
+    belly.position.set(0, 0.5, 0.28); group.add(belly);
 
     const head = new THREE.Group();
     head.position.y = 1.25;
     const headMain = new THREE.Mesh(new THREE.BoxGeometry(0.8, 0.75, 0.75), bodyMat);
-    headMain.castShadow = true;
-    head.add(headMain);
+    headMain.castShadow = true; head.add(headMain);
 
     if (type === 2) {
-      const patch1 = new THREE.Mesh(new THREE.BoxGeometry(0.24, 0.24, 0.03), accentMat);
-      patch1.position.set(-0.18, 0.08, 0.38);
-      head.add(patch1);
-      const patch2 = new THREE.Mesh(new THREE.BoxGeometry(0.24, 0.24, 0.03), accentMat);
-      patch2.position.set(0.18, 0.08, 0.38);
-      head.add(patch2);
+      const p1 = new THREE.Mesh(new THREE.BoxGeometry(0.24, 0.24, 0.03), accentMat);
+      p1.position.set(-0.18, 0.08, 0.38); head.add(p1);
+      const p2 = new THREE.Mesh(new THREE.BoxGeometry(0.24, 0.24, 0.03), accentMat);
+      p2.position.set(0.18, 0.08, 0.38); head.add(p2);
     }
-
     const eyeW1 = new THREE.Mesh(new THREE.BoxGeometry(0.15, 0.18, 0.04), whiteMat);
-    eyeW1.position.set(-0.18, 0.1, 0.4);
-    head.add(eyeW1);
+    eyeW1.position.set(-0.18, 0.1, 0.4); head.add(eyeW1);
     const eyeW2 = new THREE.Mesh(new THREE.BoxGeometry(0.15, 0.18, 0.04), whiteMat);
-    eyeW2.position.set(0.18, 0.1, 0.4);
-    head.add(eyeW2);
+    eyeW2.position.set(0.18, 0.1, 0.4); head.add(eyeW2);
     const pupil1 = new THREE.Mesh(new THREE.BoxGeometry(0.08, 0.12, 0.03), eyeMat);
-    pupil1.position.set(-0.17, 0.08, 0.42);
-    head.add(pupil1);
+    pupil1.position.set(-0.17, 0.08, 0.42); head.add(pupil1);
     const pupil2 = new THREE.Mesh(new THREE.BoxGeometry(0.08, 0.12, 0.03), eyeMat);
-    pupil2.position.set(0.17, 0.08, 0.42);
-    head.add(pupil2);
+    pupil2.position.set(0.17, 0.08, 0.42); head.add(pupil2);
     const hl1 = new THREE.Mesh(new THREE.BoxGeometry(0.03, 0.05, 0.02), whiteMat);
-    hl1.position.set(-0.15, 0.11, 0.44);
-    head.add(hl1);
+    hl1.position.set(-0.15, 0.11, 0.44); head.add(hl1);
     const hl2 = new THREE.Mesh(new THREE.BoxGeometry(0.03, 0.05, 0.02), whiteMat);
-    hl2.position.set(0.19, 0.11, 0.44);
-    head.add(hl2);
+    hl2.position.set(0.19, 0.11, 0.44); head.add(hl2);
 
     if (type === 0) {
       const beak = new THREE.Mesh(new THREE.BoxGeometry(0.18, 0.1, 0.12), beakMat);
-      beak.position.set(0, -0.1, 0.42);
-      head.add(beak);
+      beak.position.set(0, -0.1, 0.42); head.add(beak);
       const beakBot = new THREE.Mesh(new THREE.BoxGeometry(0.14, 0.06, 0.1), beakMat);
-      beakBot.position.set(0, -0.18, 0.4);
-      head.add(beakBot);
-      const cheek1 = new THREE.Mesh(new THREE.BoxGeometry(0.08, 0.06, 0.02), flatMat(0xff9ab3));
-      cheek1.position.set(-0.3, -0.1, 0.38);
-      head.add(cheek1);
-      const cheek2 = new THREE.Mesh(new THREE.BoxGeometry(0.08, 0.06, 0.02), flatMat(0xff9ab3));
-      cheek2.position.set(0.3, -0.1, 0.38);
-      head.add(cheek2);
-      const tuft1 = new THREE.Mesh(new THREE.BoxGeometry(0.08, 0.14, 0.08), flatMat(s.accent));
-      tuft1.position.set(0, 0.44, 0);
-      tuft1.rotation.z = 0.2;
-      head.add(tuft1);
-      const tuft2 = new THREE.Mesh(new THREE.BoxGeometry(0.06, 0.1, 0.06), flatMat(s.accent));
-      tuft2.position.set(-0.08, 0.42, 0);
-      tuft2.rotation.z = -0.3;
-      head.add(tuft2);
+      beakBot.position.set(0, -0.18, 0.4); head.add(beakBot);
+      const c1 = new THREE.Mesh(new THREE.BoxGeometry(0.08, 0.06, 0.02), flatMat(0xff9ab3));
+      c1.position.set(-0.3, -0.1, 0.38); head.add(c1);
+      const c2 = new THREE.Mesh(new THREE.BoxGeometry(0.08, 0.06, 0.02), flatMat(0xff9ab3));
+      c2.position.set(0.3, -0.1, 0.38); head.add(c2);
+      const t1 = new THREE.Mesh(new THREE.BoxGeometry(0.08, 0.14, 0.08), flatMat(s.accent));
+      t1.position.set(0, 0.44, 0); t1.rotation.z = 0.2; head.add(t1);
+      const t2 = new THREE.Mesh(new THREE.BoxGeometry(0.06, 0.1, 0.06), flatMat(s.accent));
+      t2.position.set(-0.08, 0.42, 0); t2.rotation.z = -0.3; head.add(t2);
     } else if (type === 1) {
-      eyeW1.position.set(-0.22, 0.28, 0.25);
-      eyeW1.scale.set(1.3, 1.3, 3);
-      eyeW2.position.set(0.22, 0.28, 0.25);
-      eyeW2.scale.set(1.3, 1.3, 3);
-      pupil1.position.set(-0.22, 0.3, 0.38);
-      pupil1.scale.set(1.2, 1.2, 1);
-      pupil2.position.set(0.22, 0.3, 0.38);
-      pupil2.scale.set(1.2, 1.2, 1);
-      hl1.position.set(-0.25, 0.33, 0.42);
-      hl2.position.set(0.19, 0.33, 0.42);
-      const eyeBase1 = new THREE.Mesh(new THREE.BoxGeometry(0.22, 0.22, 0.3), flatMat(0x6acc58));
-      eyeBase1.position.set(-0.22, 0.25, 0.25);
-      head.add(eyeBase1);
-      const eyeBase2 = new THREE.Mesh(new THREE.BoxGeometry(0.22, 0.22, 0.3), flatMat(0x6acc58));
-      eyeBase2.position.set(0.22, 0.25, 0.25);
-      head.add(eyeBase2);
-      const mouth = new THREE.Mesh(new THREE.BoxGeometry(0.45, 0.04, 0.03), eyeMat);
-      mouth.position.set(0, -0.15, 0.4);
-      head.add(mouth);
-      const cheek1 = new THREE.Mesh(new THREE.BoxGeometry(0.1, 0.07, 0.02), flatMat(0xff9ab3));
-      cheek1.position.set(-0.3, -0.05, 0.38);
-      head.add(cheek1);
-      const cheek2 = new THREE.Mesh(new THREE.BoxGeometry(0.1, 0.07, 0.02), flatMat(0xff9ab3));
-      cheek2.position.set(0.3, -0.05, 0.38);
-      head.add(cheek2);
+      eyeW1.position.set(-0.22, 0.28, 0.25); eyeW1.scale.set(1.3, 1.3, 3);
+      eyeW2.position.set(0.22, 0.28, 0.25); eyeW2.scale.set(1.3, 1.3, 3);
+      pupil1.position.set(-0.22, 0.3, 0.38); pupil1.scale.set(1.2, 1.2, 1);
+      pupil2.position.set(0.22, 0.3, 0.38); pupil2.scale.set(1.2, 1.2, 1);
+      hl1.position.set(-0.25, 0.33, 0.42); hl2.position.set(0.19, 0.33, 0.42);
+      const eb1 = new THREE.Mesh(new THREE.BoxGeometry(0.22, 0.22, 0.3), flatMat(0x6acc58));
+      eb1.position.set(-0.22, 0.25, 0.25); head.add(eb1);
+      const eb2 = new THREE.Mesh(new THREE.BoxGeometry(0.22, 0.22, 0.3), flatMat(0x6acc58));
+      eb2.position.set(0.22, 0.25, 0.25); head.add(eb2);
+      const m = new THREE.Mesh(new THREE.BoxGeometry(0.45, 0.04, 0.03), eyeMat);
+      m.position.set(0, -0.15, 0.4); head.add(m);
+      const c1 = new THREE.Mesh(new THREE.BoxGeometry(0.1, 0.07, 0.02), flatMat(0xff9ab3));
+      c1.position.set(-0.3, -0.05, 0.38); head.add(c1);
+      const c2 = new THREE.Mesh(new THREE.BoxGeometry(0.1, 0.07, 0.02), flatMat(0xff9ab3));
+      c2.position.set(0.3, -0.05, 0.38); head.add(c2);
     } else {
-      const ear1 = new THREE.Mesh(new THREE.BoxGeometry(0.22, 0.22, 0.18), accentMat);
-      ear1.position.set(-0.28, 0.45, 0);
-      ear1.castShadow = true;
-      head.add(ear1);
-      const ear2 = new THREE.Mesh(new THREE.BoxGeometry(0.22, 0.22, 0.18), accentMat);
-      ear2.position.set(0.28, 0.45, 0);
-      ear2.castShadow = true;
-      head.add(ear2);
-      const nose = new THREE.Mesh(new THREE.BoxGeometry(0.1, 0.08, 0.04), eyeMat);
-      nose.position.set(0, -0.08, 0.4);
-      head.add(nose);
-      const mouth1 = new THREE.Mesh(new THREE.BoxGeometry(0.025, 0.06, 0.02), eyeMat);
-      mouth1.position.set(0, -0.16, 0.4);
-      head.add(mouth1);
-      const smile1 = new THREE.Mesh(new THREE.BoxGeometry(0.1, 0.025, 0.02), eyeMat);
-      smile1.position.set(-0.05, -0.21, 0.4);
-      head.add(smile1);
-      const smile2 = new THREE.Mesh(new THREE.BoxGeometry(0.1, 0.025, 0.02), eyeMat);
-      smile2.position.set(0.05, -0.21, 0.4);
-      head.add(smile2);
-      const cheek1 = new THREE.Mesh(new THREE.BoxGeometry(0.1, 0.06, 0.02), flatMat(0xffb8c8));
-      cheek1.position.set(-0.28, -0.14, 0.38);
-      head.add(cheek1);
-      const cheek2 = new THREE.Mesh(new THREE.BoxGeometry(0.1, 0.06, 0.02), flatMat(0xffb8c8));
-      cheek2.position.set(0.28, -0.14, 0.38);
-      head.add(cheek2);
+      const e1 = new THREE.Mesh(new THREE.BoxGeometry(0.22, 0.22, 0.18), accentMat);
+      e1.position.set(-0.28, 0.45, 0); e1.castShadow = true; head.add(e1);
+      const e2 = new THREE.Mesh(new THREE.BoxGeometry(0.22, 0.22, 0.18), accentMat);
+      e2.position.set(0.28, 0.45, 0); e2.castShadow = true; head.add(e2);
+      const n = new THREE.Mesh(new THREE.BoxGeometry(0.1, 0.08, 0.04), eyeMat);
+      n.position.set(0, -0.08, 0.4); head.add(n);
+      const m1 = new THREE.Mesh(new THREE.BoxGeometry(0.025, 0.06, 0.02), eyeMat);
+      m1.position.set(0, -0.16, 0.4); head.add(m1);
+      const s1 = new THREE.Mesh(new THREE.BoxGeometry(0.1, 0.025, 0.02), eyeMat);
+      s1.position.set(-0.05, -0.21, 0.4); head.add(s1);
+      const s2 = new THREE.Mesh(new THREE.BoxGeometry(0.1, 0.025, 0.02), eyeMat);
+      s2.position.set(0.05, -0.21, 0.4); head.add(s2);
+      const c1 = new THREE.Mesh(new THREE.BoxGeometry(0.1, 0.06, 0.02), flatMat(0xffb8c8));
+      c1.position.set(-0.28, -0.14, 0.38); head.add(c1);
+      const c2 = new THREE.Mesh(new THREE.BoxGeometry(0.1, 0.06, 0.02), flatMat(0xffb8c8));
+      c2.position.set(0.28, -0.14, 0.38); head.add(c2);
     }
 
     group.add(head);
@@ -1207,48 +997,35 @@
       const pivot = new THREE.Group();
       const armColor = (type === 2) ? accentMat : bodyMat;
       const arm = new THREE.Mesh(new THREE.BoxGeometry(0.18, 0.4, 0.22), armColor);
-      arm.position.y = -0.2;
-      arm.castShadow = true;
+      arm.position.y = -0.2; arm.castShadow = true;
       pivot.add(arm);
       pivot.position.set(i === 0 ? -0.4 : 0.4, 0.7, 0);
-      group.add(pivot);
-      arms.push(pivot);
+      group.add(pivot); arms.push(pivot);
     }
-
     const legs = [];
     for (let i = 0; i < 2; i++) {
       const pivot = new THREE.Group();
       const legColor = (type === 2) ? accentMat : bodyMat;
       const leg = new THREE.Mesh(new THREE.BoxGeometry(0.2, 0.3, 0.22), legColor);
-      leg.position.y = -0.15;
-      leg.castShadow = true;
+      leg.position.y = -0.15; leg.castShadow = true;
       pivot.add(leg);
       const foot = new THREE.Mesh(new THREE.BoxGeometry(0.24, 0.1, 0.32), footMat);
-      foot.position.set(0, -0.33, 0.05);
-      foot.castShadow = true;
+      foot.position.set(0, -0.33, 0.05); foot.castShadow = true;
       pivot.add(foot);
       pivot.position.set(i === 0 ? -0.15 : 0.15, 0.3, 0);
-      group.add(pivot);
-      legs.push(pivot);
+      group.add(pivot); legs.push(pivot);
     }
-
     if (type === 0) {
       const tail = new THREE.Mesh(new THREE.BoxGeometry(0.14, 0.2, 0.1), flatMat(s.accent));
-      tail.position.set(0, 0.68, -0.3);
-      tail.rotation.x = 0.6;
-      tail.castShadow = true;
+      tail.position.set(0, 0.68, -0.3); tail.rotation.x = 0.6; tail.castShadow = true;
       group.add(tail);
     } else if (type === 2) {
       const tail = new THREE.Mesh(new THREE.BoxGeometry(0.12, 0.12, 0.1), accentMat);
-      tail.position.set(0, 0.5, -0.3);
-      tail.castShadow = true;
+      tail.position.set(0, 0.5, -0.3); tail.castShadow = true;
       group.add(tail);
     }
-
-    group.userData.legs = legs;
-    group.userData.arms = arms;
-    group.userData.body = body;
-    group.userData.head = head;
+    group.userData.legs = legs; group.userData.arms = arms;
+    group.userData.body = body; group.userData.head = head;
     return group;
   }
 
@@ -1258,58 +1035,37 @@
   scene.add(player);
 
   // ============================================
-  // 금괴 & 장애물 & 파워업
+  // 오브젝트 생성 함수
   // ============================================
   const activeObjects = [];
 
   function createGoldBar() {
     const g = new THREE.Group();
-    const bar = new THREE.Mesh(
-      new THREE.BoxGeometry(0.4, 0.2, 0.24),
-      new THREE.MeshStandardMaterial({
-        color: 0xffd54a, metalness: 0.6, roughness: 0.4,
-        emissive: 0x663300, emissiveIntensity: 0.4, flatShading: true
-      })
-    );
-    bar.castShadow = true;
-    g.add(bar);
+    const bar = new THREE.Mesh(new THREE.BoxGeometry(0.4, 0.2, 0.24),
+      new THREE.MeshStandardMaterial({ color: 0xffd54a, metalness: 0.6, roughness: 0.4, emissive: 0x663300, emissiveIntensity: 0.4, flatShading: true }));
+    bar.castShadow = true; g.add(bar);
     const hl = new THREE.Mesh(new THREE.BoxGeometry(0.3, 0.04, 0.18), flatMat(0xfff5a0));
-    hl.position.y = 0.11;
-    g.add(hl);
+    hl.position.y = 0.11; g.add(hl);
     return g;
   }
 
   function createGoldPile() {
     const g = new THREE.Group();
-    const mat = new THREE.MeshStandardMaterial({
-      color: 0xffd54a, metalness: 0.6, roughness: 0.4,
-      emissive: 0x663300, emissiveIntensity: 0.4, flatShading: true
-    });
+    const mat = new THREE.MeshStandardMaterial({ color: 0xffd54a, metalness: 0.6, roughness: 0.4, emissive: 0x663300, emissiveIntensity: 0.4, flatShading: true });
     for (let i = 0; i < 8; i++) {
       const bar = new THREE.Mesh(new THREE.BoxGeometry(0.4, 0.2, 0.24), mat);
-      bar.position.set(
-        (Math.random() - 0.5) * 0.3,
-        0.1 + Math.floor(i / 3) * 0.22,
-        (Math.random() - 0.5) * 0.3
-      );
-      bar.rotation.y = Math.random() * Math.PI * 2;
-      bar.castShadow = true;
+      bar.position.set((Math.random()-0.5)*0.3, 0.1+Math.floor(i/3)*0.22, (Math.random()-0.5)*0.3);
+      bar.rotation.y = Math.random() * Math.PI * 2; bar.castShadow = true;
       g.add(bar);
     }
     return g;
   }
 
-  // 파워업 4종
   function createPowerup(type) {
     const g = new THREE.Group();
-    // 빛나는 받침대 (공통)
-    const pedestal = new THREE.Mesh(
-      new THREE.BoxGeometry(0.5, 0.05, 0.5),
-      new THREE.MeshStandardMaterial({ color: 0xffffff, emissive: 0xffffff, emissiveIntensity: 0.3 })
-    );
-    pedestal.position.y = 0.02;
-    g.add(pedestal);
-
+    const ped = new THREE.Mesh(new THREE.BoxGeometry(0.5, 0.05, 0.5),
+      new THREE.MeshStandardMaterial({ color: 0xffffff, emissive: 0xffffff, emissiveIntensity: 0.3 }));
+    ped.position.y = 0.02; g.add(ped);
     const configs = {
       magnet: { color: 0xff4a6a, emissive: 0x6a1818 },
       shield: { color: 0x4acfff, emissive: 0x186070 },
@@ -1317,84 +1073,42 @@
       x2: { color: 0x7fff3f, emissive: 0x2a6a10 }
     };
     const cfg = configs[type];
-    const mat = new THREE.MeshStandardMaterial({
-      color: cfg.color, metalness: 0.3, roughness: 0.4,
-      emissive: cfg.emissive, emissiveIntensity: 0.6, flatShading: true
-    });
-
+    const mat = new THREE.MeshStandardMaterial({ color: cfg.color, metalness: 0.3, roughness: 0.4, emissive: cfg.emissive, emissiveIntensity: 0.6, flatShading: true });
     if (type === 'magnet') {
-      // 말굽 자석 (두 기둥 + 윗쪽 연결)
-      const left = new THREE.Mesh(new THREE.BoxGeometry(0.12, 0.4, 0.12), mat);
-      left.position.set(-0.12, 0.4, 0);
-      left.castShadow = true;
-      g.add(left);
-      const right = new THREE.Mesh(new THREE.BoxGeometry(0.12, 0.4, 0.12), mat);
-      right.position.set(0.12, 0.4, 0);
-      right.castShadow = true;
-      g.add(right);
-      const top = new THREE.Mesh(new THREE.BoxGeometry(0.36, 0.12, 0.12), mat);
-      top.position.set(0, 0.64, 0);
-      top.castShadow = true;
-      g.add(top);
-      // 끝 (파란 캡)
-      const capMat = flatMat(0xffffff);
-      const cap1 = new THREE.Mesh(new THREE.BoxGeometry(0.14, 0.1, 0.14), capMat);
-      cap1.position.set(-0.12, 0.22, 0);
-      g.add(cap1);
-      const cap2 = new THREE.Mesh(new THREE.BoxGeometry(0.14, 0.1, 0.14), capMat);
-      cap2.position.set(0.12, 0.22, 0);
-      g.add(cap2);
+      const l = new THREE.Mesh(new THREE.BoxGeometry(0.12, 0.4, 0.12), mat);
+      l.position.set(-0.12, 0.4, 0); l.castShadow = true; g.add(l);
+      const r = new THREE.Mesh(new THREE.BoxGeometry(0.12, 0.4, 0.12), mat);
+      r.position.set(0.12, 0.4, 0); r.castShadow = true; g.add(r);
+      const t = new THREE.Mesh(new THREE.BoxGeometry(0.36, 0.12, 0.12), mat);
+      t.position.set(0, 0.64, 0); t.castShadow = true; g.add(t);
+      const cm = flatMat(0xffffff);
+      const c1 = new THREE.Mesh(new THREE.BoxGeometry(0.14, 0.1, 0.14), cm);
+      c1.position.set(-0.12, 0.22, 0); g.add(c1);
+      const c2 = new THREE.Mesh(new THREE.BoxGeometry(0.14, 0.1, 0.14), cm);
+      c2.position.set(0.12, 0.22, 0); g.add(c2);
     } else if (type === 'shield') {
-      // 방패 (5각형 박스)
-      const shield = new THREE.Mesh(new THREE.BoxGeometry(0.5, 0.55, 0.12), mat);
-      shield.position.y = 0.45;
-      shield.castShadow = true;
-      g.add(shield);
-      // 별 표시 (작은 흰 박스들)
-      const starMat = flatMat(0xffffff);
-      const star = new THREE.Mesh(new THREE.BoxGeometry(0.2, 0.08, 0.14), starMat);
-      star.position.set(0, 0.45, 0.05);
-      g.add(star);
-      const star2 = new THREE.Mesh(new THREE.BoxGeometry(0.08, 0.2, 0.14), starMat);
-      star2.position.set(0, 0.45, 0.05);
-      g.add(star2);
+      const sh = new THREE.Mesh(new THREE.BoxGeometry(0.5, 0.55, 0.12), mat);
+      sh.position.y = 0.45; sh.castShadow = true; g.add(sh);
+      const sm = flatMat(0xffffff);
+      const s1 = new THREE.Mesh(new THREE.BoxGeometry(0.2, 0.08, 0.14), sm);
+      s1.position.set(0, 0.45, 0.05); g.add(s1);
+      const s2 = new THREE.Mesh(new THREE.BoxGeometry(0.08, 0.2, 0.14), sm);
+      s2.position.set(0, 0.45, 0.05); g.add(s2);
     } else if (type === 'boost') {
-      // 번개
-      const bolt1 = new THREE.Mesh(new THREE.BoxGeometry(0.18, 0.3, 0.15), mat);
-      bolt1.position.set(0.05, 0.55, 0);
-      bolt1.rotation.z = 0.3;
-      bolt1.castShadow = true;
-      g.add(bolt1);
-      const bolt2 = new THREE.Mesh(new THREE.BoxGeometry(0.18, 0.3, 0.15), mat);
-      bolt2.position.set(-0.05, 0.3, 0);
-      bolt2.rotation.z = 0.3;
-      bolt2.castShadow = true;
-      g.add(bolt2);
+      const b1 = new THREE.Mesh(new THREE.BoxGeometry(0.18, 0.3, 0.15), mat);
+      b1.position.set(0.05, 0.55, 0); b1.rotation.z = 0.3; b1.castShadow = true; g.add(b1);
+      const b2 = new THREE.Mesh(new THREE.BoxGeometry(0.18, 0.3, 0.15), mat);
+      b2.position.set(-0.05, 0.3, 0); b2.rotation.z = 0.3; b2.castShadow = true; g.add(b2);
     } else if (type === 'x2') {
-      // X2 박스
-      const box = new THREE.Mesh(new THREE.BoxGeometry(0.4, 0.4, 0.4), mat);
-      box.position.y = 0.3;
-      box.castShadow = true;
-      g.add(box);
-      // "2" 표시 (심플한 박스)
-      const numMat = flatMat(0xffffff);
-      const n1 = new THREE.Mesh(new THREE.BoxGeometry(0.16, 0.05, 0.05), numMat);
-      n1.position.set(0, 0.42, 0.22);
-      g.add(n1);
-      const n2 = new THREE.Mesh(new THREE.BoxGeometry(0.05, 0.08, 0.05), numMat);
-      n2.position.set(0.07, 0.36, 0.22);
-      g.add(n2);
-      const n3 = new THREE.Mesh(new THREE.BoxGeometry(0.16, 0.05, 0.05), numMat);
-      n3.position.set(0, 0.3, 0.22);
-      g.add(n3);
-      const n4 = new THREE.Mesh(new THREE.BoxGeometry(0.05, 0.08, 0.05), numMat);
-      n4.position.set(-0.07, 0.24, 0.22);
-      g.add(n4);
-      const n5 = new THREE.Mesh(new THREE.BoxGeometry(0.16, 0.05, 0.05), numMat);
-      n5.position.set(0, 0.18, 0.22);
-      g.add(n5);
+      const bx = new THREE.Mesh(new THREE.BoxGeometry(0.4, 0.4, 0.4), mat);
+      bx.position.y = 0.3; bx.castShadow = true; g.add(bx);
+      const nm = flatMat(0xffffff);
+      const positions = [[0,0.42,0.22,0.16,0.05],[0.07,0.36,0.22,0.05,0.08],[0,0.3,0.22,0.16,0.05],[-0.07,0.24,0.22,0.05,0.08],[0,0.18,0.22,0.16,0.05]];
+      for (const p of positions) {
+        const n = new THREE.Mesh(new THREE.BoxGeometry(p[3], p[4], 0.05), nm);
+        n.position.set(p[0], p[1], p[2]); g.add(n);
+      }
     }
-
     g.userData.powerupType = type;
     return g;
   }
@@ -1402,21 +1116,19 @@
   function createBarrier() {
     const group = new THREE.Group();
     const base = new THREE.Mesh(new THREE.BoxGeometry(1.5, 1.0, 0.25), flatMat(0xdc3030));
-    base.position.y = 0.5;
-    base.castShadow = true;
-    group.add(base);
+    base.position.y = 0.5; base.castShadow = true; group.add(base);
     for (let i = 0; i < 3; i++) {
       const stripe = new THREE.Mesh(new THREE.BoxGeometry(1.52, 0.12, 0.26), flatMat(0xffffff));
-      stripe.position.set(0, 0.2 + i * 0.32, 0);
-      group.add(stripe);
+      stripe.position.set(0, 0.2 + i * 0.32, 0); group.add(stripe);
     }
+    const xMat = new THREE.MeshStandardMaterial({ color: 0xffffff });
+    const x1 = new THREE.Mesh(new THREE.BoxGeometry(1.4, 0.14, 0.05), xMat);
+    x1.position.set(0, 0.55, 0.18); x1.rotation.z = Math.PI / 4; group.add(x1);
+    const x2 = x1.clone(); x2.rotation.z = -Math.PI / 4; group.add(x2);
     for (let i = -1; i <= 1; i += 2) {
-      const light = new THREE.Mesh(
-        new THREE.BoxGeometry(0.2, 0.2, 0.2),
-        new THREE.MeshStandardMaterial({ color: 0xffaa00, emissive: 0xff6600, emissiveIntensity: 0.8, flatShading: true })
-      );
-      light.position.set(i * 0.5, 1.15, 0);
-      group.add(light);
+      const l = new THREE.Mesh(new THREE.BoxGeometry(0.2, 0.2, 0.2),
+        new THREE.MeshStandardMaterial({ color: 0xffaa00, emissive: 0xff6600, emissiveIntensity: 0.8, flatShading: true }));
+      l.position.set(i * 0.42, 1.22, 0); group.add(l);
     }
     return group;
   }
@@ -1424,47 +1136,45 @@
   function createLowBar() {
     const group = new THREE.Group();
     const bar = new THREE.Mesh(new THREE.BoxGeometry(1.8, 0.22, 0.3), flatMat(0x4090ff));
-    bar.position.y = 1.4;
-    bar.castShadow = true;
-    group.add(bar);
+    bar.position.y = 1.4; bar.castShadow = true; group.add(bar);
     for (let i = 0; i < 3; i++) {
       const stripe = new THREE.Mesh(new THREE.BoxGeometry(1.82, 0.07, 0.31), flatMat(0xffffff));
-      stripe.position.set(0, 1.4 - 0.08 + i * 0.08, 0);
-      group.add(stripe);
+      stripe.position.set(0, 1.4 - 0.08 + i * 0.08, 0); group.add(stripe);
     }
     for (let i = -1; i <= 1; i += 2) {
       const post = new THREE.Mesh(new THREE.BoxGeometry(0.14, 1.4, 0.14), flatMat(0x6a6a70));
-      post.position.set(i * 0.85, 0.7, 0);
-      post.castShadow = true;
-      group.add(post);
+      post.position.set(i * 0.85, 0.7, 0); post.castShadow = true; group.add(post);
     }
     const arrow = new THREE.Mesh(new THREE.BoxGeometry(0.2, 0.06, 0.04), flatMat(0xffffff));
-    arrow.position.set(0, 1.4, 0.2);
-    group.add(arrow);
-    const arrowTip = new THREE.Mesh(new THREE.ConeGeometry(0.08, 0.15, 4), flatMat(0xffffff));
-    arrowTip.position.set(0, 1.22, 0.2);
-    arrowTip.rotation.x = Math.PI;
-    arrowTip.rotation.y = Math.PI / 4;
-    group.add(arrowTip);
+    arrow.position.set(0, 1.4, 0.2); group.add(arrow);
+    const at = new THREE.Mesh(new THREE.ConeGeometry(0.08, 0.15, 4), flatMat(0xffffff));
+    at.position.set(0, 1.22, 0.2); at.rotation.x = Math.PI; at.rotation.y = Math.PI/4;
+    group.add(at);
     return group;
   }
 
   function createCrate() {
     const g = new THREE.Group();
     const box = new THREE.Mesh(new THREE.BoxGeometry(1.1, 1.0, 1.0), flatMat(0xa06a38));
-    box.position.y = 0.5;
-    box.castShadow = true;
-    g.add(box);
-    const plank = new THREE.Mesh(new THREE.BoxGeometry(1.12, 0.05, 1.02), flatMat(0x6a4020));
-    plank.position.y = 0.5;
-    g.add(plank);
-    const plank2 = new THREE.Mesh(new THREE.BoxGeometry(1.12, 1.02, 0.05), flatMat(0x6a4020));
-    plank2.position.set(0, 0.5, 0);
-    g.add(plank2);
-    const corner = new THREE.Mesh(new THREE.BoxGeometry(1.14, 0.15, 0.15), flatMat(0x404040));
-    corner.position.set(0, 1.0, -0.45);
-    g.add(corner);
+    box.position.y = 0.5; box.castShadow = true; g.add(box);
+    const p1 = new THREE.Mesh(new THREE.BoxGeometry(1.12, 0.05, 1.02), flatMat(0x6a4020));
+    p1.position.y = 0.5; g.add(p1);
+    const p2 = new THREE.Mesh(new THREE.BoxGeometry(1.12, 1.02, 0.05), flatMat(0x6a4020));
+    p2.position.set(0, 0.5, 0); g.add(p2);
+    const c = new THREE.Mesh(new THREE.BoxGeometry(1.14, 0.15, 0.15), flatMat(0x404040));
+    c.position.set(0, 1.0, -0.45); g.add(c);
     return g;
+  }
+
+  // ============================================
+  // 🎯 장애물 스폰 (난이도 반영 + 안전 보장)
+  // ============================================
+  let lastObstacleZ = -1000; // 마지막 장애물의 Z 좌표
+
+  function canPlaceObstacle(rowZ) {
+    // 최소 간격 확보
+    const minGap = difficulty.minGapSeconds * state.speed;
+    return (lastObstacleZ - rowZ) > minGap;
   }
 
   function spawnObjectsAhead(zStart) {
@@ -1473,8 +1183,11 @@
       const rowZ = zStart - r * 3.2 - Math.random() * 1;
       const pattern = Math.random();
 
-      // 파워업 (2% 확률, 30초 후부터)
-      if (pattern < 0.025 && state.runTime > 15) {
+      // 시작 후 일정 시간은 장애물 없음 (적응 시간)
+      const canSpawnObstacle = state.runTime > difficulty.startDelaySeconds;
+
+      // 파워업
+      if (pattern < difficulty.powerupRate && state.runTime > difficulty.powerupAfter) {
         const types = ['magnet', 'shield', 'boost', 'x2'];
         const ptype = types[Math.floor(Math.random() * types.length)];
         const lane = Math.floor(Math.random() * 3);
@@ -1482,40 +1195,60 @@
         p.position.set(LANE_X[lane], 0, rowZ);
         scene.add(p);
         activeObjects.push({ mesh: p, type: 'powerup', lane, z: rowZ, ptype });
-      } else if (pattern < 0.1 && state.runTime > 10) {
+      }
+      // 골드 더미
+      else if (pattern < difficulty.powerupRate + 0.06 && state.runTime > difficulty.goldenSpawnAfter) {
         const lane = Math.floor(Math.random() * 3);
         const pile = createGoldPile();
         pile.position.set(LANE_X[lane], 0, rowZ);
         scene.add(pile);
         activeObjects.push({ mesh: pile, type: 'goldpile', lane, z: rowZ, value: 10 });
-      } else if (pattern < 0.4) {
+      }
+      // 장애물
+      else if (canSpawnObstacle && pattern < (difficulty.powerupRate + 0.06 + difficulty.obstacleRate) && canPlaceObstacle(rowZ)) {
         const blockedLanes = new Set();
-        const count = Math.random() < 0.35 ? 2 : 1;
+        // 2개 동시 여부
+        const useDouble = Math.random() < difficulty.doubleObstacleRate;
+        const count = useDouble ? 2 : 1;
+
+        // 핵심: 3레인 다 막히지 않도록 보장
+        // count = 2여도 반드시 1개 레인은 비워둠
         for (let i = 0; i < count; i++) {
-          let lane = Math.floor(Math.random() * 3);
+          let lane;
           let tries = 0;
-          while (blockedLanes.has(lane) && tries < 3) { lane = Math.floor(Math.random() * 3); tries++; }
+          do {
+            lane = Math.floor(Math.random() * 3);
+            tries++;
+          } while (blockedLanes.has(lane) && tries < 5);
           if (blockedLanes.has(lane)) continue;
+          if (blockedLanes.size >= 2) break; // 안전장치: 최대 2개만
           blockedLanes.add(lane);
+
           const rand = Math.random();
-          let obstacleType, mesh;
-          if (rand < 0.45) { obstacleType = 'barrier'; mesh = createBarrier(); }
-          else if (rand < 0.75) { obstacleType = 'lowbar'; mesh = createLowBar(); }
-          else { obstacleType = 'crate'; mesh = createCrate(); }
+          let ot, mesh;
+          if (rand < 0.45) { ot = 'barrier'; mesh = createBarrier(); }
+          else if (rand < 0.75) { ot = 'lowbar'; mesh = createLowBar(); }
+          else { ot = 'crate'; mesh = createCrate(); }
           mesh.position.set(LANE_X[lane], 0, rowZ);
           scene.add(mesh);
-          activeObjects.push({ mesh, type: obstacleType, lane, z: rowZ });
+          activeObjects.push({ mesh, type: ot, lane, z: rowZ });
         }
+
+        lastObstacleZ = rowZ;
+
+        // 비어있는 레인에 금괴
         for (let lane = 0; lane < 3; lane++) {
           if (blockedLanes.has(lane)) continue;
-          if (Math.random() < 0.65) {
+          if (Math.random() < 0.7) {
             const bar = createGoldBar();
             bar.position.set(LANE_X[lane], 0.5, rowZ);
             scene.add(bar);
             activeObjects.push({ mesh: bar, type: 'gold', lane, z: rowZ });
           }
         }
-      } else if (pattern < 0.78) {
+      }
+      // 금괴 라인
+      else if (pattern < 0.8) {
         const lane = Math.floor(Math.random() * 3);
         for (let c = 0; c < 4; c++) {
           const bar = createGoldBar();
@@ -1523,7 +1256,9 @@
           scene.add(bar);
           activeObjects.push({ mesh: bar, type: 'gold', lane, z: rowZ - c * 0.8 });
         }
-      } else {
+      }
+      // 휴식 + 랜덤 금괴
+      else {
         if (Math.random() < 0.6) {
           const lane = Math.floor(Math.random() * 3);
           const bar = createGoldBar();
@@ -1536,103 +1271,79 @@
   }
 
   // ============================================
-  // 미션 시스템
+  // 미션
   // ============================================
   const MISSION_POOL = [
-    { id: 'gold50', text: '금괴 50개 수집', target: 50, type: 'gold', reward: 500 },
-    { id: 'gold100', text: '금괴 100개 수집', target: 100, type: 'gold', reward: 1000 },
-    { id: 'gold200', text: '금괴 200개 수집', target: 200, type: 'gold', reward: 2000 },
-    { id: 'dist300', text: '300m 달리기', target: 300, type: 'distance', reward: 500 },
-    { id: 'dist700', text: '700m 달리기', target: 700, type: 'distance', reward: 1200 },
-    { id: 'dist1500', text: '1500m 달리기', target: 1500, type: 'distance', reward: 2500 },
-    { id: 'jump15', text: '점프 15번', target: 15, type: 'jump', reward: 400 },
-    { id: 'slide10', text: '슬라이드 10번', target: 10, type: 'slide', reward: 400 },
-    { id: 'multi5', text: '배수 ×5 달성', target: 5, type: 'multi', reward: 600 },
-    { id: 'multi10', text: '배수 ×10 달성', target: 10, type: 'multi', reward: 1200 },
-    { id: 'pow3', text: '파워업 3개 획득', target: 3, type: 'powerup', reward: 800 },
-    { id: 'stage2', text: '스테이지 2 도달', target: 2, type: 'stage', reward: 1000 },
-    { id: 'stage4', text: '스테이지 4 도달', target: 4, type: 'stage', reward: 2500 },
+    { text:'금괴 50개 수집', target:50, type:'gold', reward:500 },
+    { text:'금괴 100개 수집', target:100, type:'gold', reward:1000 },
+    { text:'금괴 200개 수집', target:200, type:'gold', reward:2000 },
+    { text:'300m 달리기', target:300, type:'distance', reward:500 },
+    { text:'700m 달리기', target:700, type:'distance', reward:1200 },
+    { text:'1500m 달리기', target:1500, type:'distance', reward:2500 },
+    { text:'점프 15번', target:15, type:'jump', reward:400 },
+    { text:'슬라이드 10번', target:10, type:'slide', reward:400 },
+    { text:'배수 ×5 달성', target:5, type:'multi', reward:600 },
+    { text:'배수 ×10 달성', target:10, type:'multi', reward:1200 },
+    { text:'파워업 3개 획득', target:3, type:'powerup', reward:800 },
+    { text:'스테이지 2 도달', target:2, type:'stage', reward:1000 },
+    { text:'스테이지 4 도달', target:4, type:'stage', reward:2500 }
   ];
-
-  let currentMission = null;
-  let missionProgress = 0;
-  let missionIdx = 0;
-
+  let currentMission = null, missionProgress = 0, missionIdx = 0;
   function selectNextMission() {
     missionIdx = (missionIdx + 1) % MISSION_POOL.length;
     currentMission = MISSION_POOL[missionIdx];
     missionProgress = 0;
     updateMissionUI();
   }
-
   function updateMissionUI() {
     if (!currentMission) return;
     document.getElementById('mission-text').textContent = currentMission.text;
     const pct = Math.min(100, (missionProgress / currentMission.target) * 100);
     document.getElementById('mission-progress').style.width = pct + '%';
   }
-
-  function progressMission(type, amount, absoluteValue) {
+  function progressMission(type, amount, absolute) {
     if (!currentMission || currentMission.type !== type) return;
-    if (absoluteValue !== undefined) {
-      missionProgress = Math.max(missionProgress, absoluteValue);
-    } else {
-      missionProgress += amount;
-    }
-    if (missionProgress >= currentMission.target) {
-      completeMission();
-    } else {
-      updateMissionUI();
-    }
+    if (absolute !== undefined) missionProgress = Math.max(missionProgress, absolute);
+    else missionProgress += amount;
+    if (missionProgress >= currentMission.target) completeMission();
+    else updateMissionUI();
   }
-
   function completeMission() {
     const reward = currentMission.reward;
     state.score += reward;
     Audio.missionSFX();
-    // 팝업 표시
     document.getElementById('mc-name').textContent = currentMission.text;
     document.getElementById('mc-reward').textContent = '+' + reward + ' pts';
     const el = document.getElementById('mission-complete');
-    el.classList.remove('show');
-    void el.offsetWidth;
-    el.classList.add('show');
-    // 다음 미션
+    el.classList.remove('show'); void el.offsetWidth; el.classList.add('show');
     setTimeout(selectNextMission, 500);
   }
 
   // ============================================
-  // 파워업 시스템
+  // 파워업
   // ============================================
-  const powerupState = {
-    magnet: 0,   // 남은 시간 (초)
-    shield: 0,
-    boost: 0,
-    x2: 0
-  };
+  const powerupState = { magnet:0, shield:0, boost:0, x2:0 };
   const POWERUP_DURATION = 6;
-
   function activatePowerup(type) {
     powerupState[type] = POWERUP_DURATION;
     progressMission('powerup', 1);
     updatePowerupUI();
   }
-
   function updatePowerupUI() {
     const bar = document.getElementById('powerup-bar');
-    const icons = { magnet: '🧲', shield: '🛡️', boost: '⚡', x2: '✨' };
+    const icons = { magnet:'🧲', shield:'🛡️', boost:'⚡', x2:'✨' };
     bar.innerHTML = '';
-    let hasAny = false;
-    for (const [type, time] of Object.entries(powerupState)) {
+    let has = false;
+    for (const [t, time] of Object.entries(powerupState)) {
       if (time > 0) {
-        hasAny = true;
+        has = true;
         const el = document.createElement('div');
-        el.className = 'powerup-icon ' + type;
-        el.innerHTML = icons[type] + '<div class="powerup-timer" style="transform:scaleX(' + (time / POWERUP_DURATION) + ')"></div>';
+        el.className = 'powerup-icon ' + t;
+        el.innerHTML = icons[t] + '<div class="powerup-timer" style="transform:scaleX(' + (time/POWERUP_DURATION) + ')"></div>';
         bar.appendChild(el);
       }
     }
-    bar.style.display = hasAny ? 'flex' : 'none';
+    bar.style.display = has ? 'flex' : 'none';
   }
 
   // ============================================
@@ -1647,14 +1358,19 @@
     distance: 0, runTime: 0, goldRushTime: 0,
     jumpCount: 0, slideCount: 0,
     reachedStage: 1,
-    bestScore: 0,
   };
-
-  // localStorage 대신 메모리 (아티팩트 환경 제약)
-  function loadBest() {
-    return 0; // 아티팩트에선 저장 불가
-  }
-  state.bestScore = loadBest();
+  // 난이도별 BEST 저장
+  const bestScores = { easy: 0, normal: 0, hard: 0 };
+  // localStorage 시도
+  try {
+    const saved = localStorage.getItem('blockdash_best');
+    if (saved) {
+      const parsed = JSON.parse(saved);
+      if (parsed.easy) bestScores.easy = parsed.easy;
+      if (parsed.normal) bestScores.normal = parsed.normal;
+      if (parsed.hard) bestScores.hard = parsed.hard;
+    }
+  } catch(e) {}
 
   for (let i = 2; i < SEGMENT_COUNT; i++) {
     spawnObjectsAhead(-i * SEGMENT_LENGTH + SEGMENT_LENGTH/2);
@@ -1667,21 +1383,15 @@
   function jump() {
     if (!state.running || state.paused) return;
     if (!state.jumping && !state.sliding) {
-      state.jumpVel = 8.5;
-      state.jumping = true;
-      state.jumpCount++;
-      progressMission('jump', 1);
-      Audio.jumpSFX();
+      state.jumpVel = 8.5; state.jumping = true; state.jumpCount++;
+      progressMission('jump', 1); Audio.jumpSFX();
     }
   }
   function slide() {
     if (!state.running || state.paused) return;
     if (!state.jumping && !state.sliding) {
-      state.sliding = true;
-      state.slideTimer = 0.6;
-      state.slideCount++;
-      progressMission('slide', 1);
-      Audio.slideSFX();
+      state.sliding = true; state.slideTimer = 0.6; state.slideCount++;
+      progressMission('slide', 1); Audio.slideSFX();
     }
   }
 
@@ -1699,100 +1409,68 @@
   renderer.domElement.addEventListener('touchend', (e) => {
     if (!touchStart || !state.running) return;
     const t = e.changedTouches[0];
-    const dx = t.clientX - touchStart.x;
-    const dy = t.clientY - touchStart.y;
+    const dx = t.clientX - touchStart.x, dy = t.clientY - touchStart.y;
     const absX = Math.abs(dx), absY = Math.abs(dy);
     if (Math.max(absX, absY) < 25) { jump(); touchStart = null; return; }
-    if (absX > absY) {
-      if (dx > 0) moveLane(1); else moveLane(-1);
-    } else {
-      if (dy > 0) slide(); else jump();
-    }
+    if (absX > absY) { if (dx > 0) moveLane(1); else moveLane(-1); }
+    else { if (dy > 0) slide(); else jump(); }
     touchStart = null;
   }, { passive: true });
 
   function checkCollision() {
-    const px = player.position.x;
-    const py = player.position.y;
-
-    // 자석: 가까운 금괴 끌어당김
+    const px = player.position.x, py = player.position.y;
     if (powerupState.magnet > 0) {
       for (const obj of activeObjects) {
         if (obj.type === 'gold' || obj.type === 'goldpile') {
-          const dx = obj.mesh.position.x - px;
-          const dz = obj.mesh.position.z - player.position.z;
+          const dx = obj.mesh.position.x - px, dz = obj.mesh.position.z - player.position.z;
           const dist = Math.sqrt(dx*dx + dz*dz);
           if (dist < 4.5) {
             const pull = Math.min(0.3, 1.5 / Math.max(0.1, dist));
-            obj.mesh.position.x -= dx * pull;
-            obj.mesh.position.z -= dz * pull;
+            obj.mesh.position.x -= dx * pull; obj.mesh.position.z -= dz * pull;
           }
         }
       }
     }
-
     for (let i = activeObjects.length - 1; i >= 0; i--) {
       const obj = activeObjects[i];
       const dx = Math.abs(obj.mesh.position.x - px);
       const dz = Math.abs(obj.mesh.position.z - player.position.z);
-
       const pickupRange = powerupState.magnet > 0 ? 1.0 : 0.7;
       const obstacleRange = 0.7;
-
       if (obj.type === 'gold' || obj.type === 'goldpile' || obj.type === 'powerup') {
         if (dx < pickupRange && dz < 0.8) {
           if (obj.type === 'gold') {
-            scene.remove(obj.mesh);
-            activeObjects.splice(i, 1);
-            collectGold(1);
-            spawnCoinFX(obj.mesh.position);
-            Audio.coinSFX();
+            scene.remove(obj.mesh); activeObjects.splice(i, 1);
+            collectGold(1); spawnCoinFX(obj.mesh.position); Audio.coinSFX();
           } else if (obj.type === 'goldpile') {
-            scene.remove(obj.mesh);
-            activeObjects.splice(i, 1);
-            collectGold(obj.value || 10);
-            spawnCoinFX(obj.mesh.position, 8);
-            state.goldRushTime = 3;
-            Audio.powerupSFX();
+            scene.remove(obj.mesh); activeObjects.splice(i, 1);
+            collectGold(obj.value || 10); spawnCoinFX(obj.mesh.position, 8);
+            state.goldRushTime = 3; Audio.powerupSFX();
           } else if (obj.type === 'powerup') {
-            scene.remove(obj.mesh);
-            activeObjects.splice(i, 1);
-            activatePowerup(obj.ptype);
-            spawnCoinFX(obj.mesh.position, 6);
+            scene.remove(obj.mesh); activeObjects.splice(i, 1);
+            activatePowerup(obj.ptype); spawnCoinFX(obj.mesh.position, 6);
             Audio.powerupSFX();
           }
         }
       } else if (dx < obstacleRange && dz < 0.8) {
-        // 장애물
         if (powerupState.shield > 0 || powerupState.boost > 0) {
-          // 방어막/부스트 — 장애물 파괴
-          scene.remove(obj.mesh);
-          activeObjects.splice(i, 1);
+          scene.remove(obj.mesh); activeObjects.splice(i, 1);
           spawnCoinFX(obj.mesh.position, 5);
-          // 방어막은 1번 쓰고 해제
           if (powerupState.shield > 0 && powerupState.boost <= 0) {
-            powerupState.shield = 0;
-            updatePowerupUI();
+            powerupState.shield = 0; updatePowerupUI();
           }
           continue;
         }
-        if (obj.type === 'barrier') {
-          if (py > 1.2) continue;
-          gameOver(); return;
-        } else if (obj.type === 'lowbar') {
-          if (state.sliding) continue;
-          gameOver(); return;
-        } else if (obj.type === 'crate') {
-          if (py > 1.0) continue;
-          gameOver(); return;
-        }
+        if (obj.type === 'barrier') { if (py > 1.2) continue; gameOver(); return; }
+        else if (obj.type === 'lowbar') { if (state.sliding) continue; gameOver(); return; }
+        else if (obj.type === 'crate') { if (py > 1.0) continue; gameOver(); return; }
       }
     }
   }
 
   function collectGold(amount) {
-    const multiplier = powerupState.x2 > 0 ? 2 : 1;
-    const gain = amount * state.multi * multiplier;
+    const mult = powerupState.x2 > 0 ? 2 : 1;
+    const gain = amount * state.multi * mult;
     state.coins += gain;
     state.score += 10 * gain;
     const prevMulti = state.multi;
@@ -1800,9 +1478,7 @@
     state.multi = Math.min(20, 1 + threshold);
     if (state.multi > prevMulti) {
       const box = document.getElementById('multi-box');
-      box.classList.remove('bump');
-      void box.offsetWidth;
-      box.classList.add('bump');
+      box.classList.remove('bump'); void box.offsetWidth; box.classList.add('bump');
       progressMission('multi', 0, state.multi);
       Audio.multiBumpSFX();
     }
@@ -1819,16 +1495,14 @@
     for (let i = 0; i < count; i++) {
       const el = document.createElement('div');
       el.className = 'coin-fx';
-      el.style.left = sx + 'px';
-      el.style.top = sy + 'px';
+      el.style.left = sx + 'px'; el.style.top = sy + 'px';
       overlay.appendChild(el);
       const angle = Math.random() * Math.PI * 2;
       const dist = 50 + Math.random() * 50;
-      const tx = Math.cos(angle) * dist;
-      const ty = Math.sin(angle) * dist - 40;
+      const tx = Math.cos(angle) * dist, ty = Math.sin(angle) * dist - 40;
       el.animate([
         { transform: 'translate(-50%, -50%) scale(1) rotate(0deg)', opacity: 1 },
-        { transform: 'translate(calc(-50% + ' + tx + 'px), calc(-50% + ' + ty + 'px)) scale(0.3) rotate(360deg)', opacity: 0 }
+        { transform: 'translate(calc(-50% + '+tx+'px), calc(-50% + '+ty+'px)) scale(0.3) rotate(360deg)', opacity: 0 }
       ], { duration: 600, easing: 'ease-out' });
       setTimeout(() => el.remove(), 650);
     }
@@ -1836,12 +1510,16 @@
 
   function gameOver() {
     state.running = false;
-    Audio.crashSFX();
-    Audio.stopBGM();
-    const isNewBest = state.score > state.bestScore;
-    if (isNewBest) state.bestScore = Math.floor(state.score);
-    document.getElementById('final-score').textContent = Math.floor(state.score);
-    document.getElementById('best-score').textContent = Math.floor(state.bestScore);
+    Audio.crashSFX(); Audio.stopBGM();
+    const cur = Math.floor(state.score);
+    const isNewBest = cur > bestScores[selectedDiff];
+    if (isNewBest) {
+      bestScores[selectedDiff] = cur;
+      try { localStorage.setItem('blockdash_best', JSON.stringify(bestScores)); } catch(e) {}
+    }
+    document.getElementById('final-score').textContent = cur;
+    document.getElementById('best-score').textContent = bestScores[selectedDiff];
+    document.getElementById('final-diff').textContent = difficulty.name;
     document.getElementById('final-coins').textContent = state.coins;
     document.getElementById('final-dist').textContent = Math.floor(state.distance) + 'm';
     document.getElementById('final-stage').textContent = state.reachedStage;
@@ -1861,82 +1539,55 @@
     requestAnimationFrame(animate);
     const dt = Math.min(0.05, (now - lastT) / 1000);
     lastT = now;
-
     for (const c of clouds) {
       c.position.x -= c.userData.speed * dt;
       if (c.position.x < -30) c.position.x = 30;
     }
-
     if (!state.running) {
       const t = now * 0.001;
       player.rotation.y = Math.sin(t * 1.5) * 0.3;
       player.position.y = Math.abs(Math.sin(t * 4)) * 0.15;
     }
-
     if (state.running && !state.paused) {
       state.runTime += dt;
-      state.targetSpeed = Math.min(state.maxSpeed, 12 + state.runTime * 0.25);
+      state.targetSpeed = Math.min(state.maxSpeed, difficulty.baseSpeed + state.runTime * difficulty.speedRamp);
       state.speed += (state.targetSpeed - state.speed) * 0.02;
-
-      // 파워업 처리
       let speedMult = 1;
       if (powerupState.boost > 0) speedMult = 1.6;
       else if (state.goldRushTime > 0) speedMult = 1.3;
-
       const effectiveSpeed = state.speed * speedMult;
-
       state.distance += effectiveSpeed * dt * 0.5;
       state.score += effectiveSpeed * dt * 0.8;
-
       progressMission('distance', 0, Math.floor(state.distance));
-
-      // 스테이지 전환 체크
-      const newStageIdx = Math.floor(state.distance / STAGE_DISTANCE);
-      if (newStageIdx !== currentStage && newStageIdx > 0) {
-        transitionToStage(newStageIdx);
-        state.reachedStage = Math.max(state.reachedStage, (newStageIdx % STAGES.length) + 1);
+      const nsi = Math.floor(state.distance / STAGE_DISTANCE);
+      if (nsi !== currentStage && nsi > 0) {
+        transitionToStage(nsi);
+        state.reachedStage = Math.max(state.reachedStage, (nsi % STAGES.length) + 1);
         progressMission('stage', 0, state.reachedStage);
       }
-
       if (state.goldRushTime > 0) state.goldRushTime -= dt;
-
-      // 파워업 타이머
-      for (const key of ['magnet', 'shield', 'boost', 'x2']) {
-        if (powerupState[key] > 0) {
-          powerupState[key] -= dt;
-          if (powerupState[key] <= 0) powerupState[key] = 0;
-        }
+      for (const k of ['magnet','shield','boost','x2']) {
+        if (powerupState[k] > 0) { powerupState[k] -= dt; if (powerupState[k] <= 0) powerupState[k] = 0; }
       }
       updatePowerupUI();
-
       const targetX = LANE_X[state.laneTarget];
       const dx = targetX - player.position.x;
       player.position.x += dx * 0.25;
       player.rotation.z = -dx * 0.18;
       player.rotation.y = dx * 0.08;
-
       if (state.jumping) {
         player.position.y += state.jumpVel * dt;
         state.jumpVel -= 22 * dt;
-        if (player.position.y <= 0) {
-          player.position.y = 0;
-          state.jumping = false;
-          state.jumpVel = 0;
-        }
+        if (player.position.y <= 0) { player.position.y = 0; state.jumping = false; state.jumpVel = 0; }
       }
       if (state.sliding) {
         state.slideTimer -= dt;
         player.scale.y = 0.5;
-        if (state.slideTimer <= 0) {
-          state.sliding = false;
-          player.scale.set(1, 1, 1);
-        }
+        if (state.slideTimer <= 0) { state.sliding = false; player.scale.set(1, 1, 1); }
       }
-
       const hopPhase = state.runTime * 10;
       const hopY = Math.abs(Math.sin(hopPhase)) * 0.1;
-      const legs = player.userData.legs;
-      const arms = player.userData.arms;
+      const legs = player.userData.legs, arms = player.userData.arms;
       if (legs && !state.sliding) {
         if (state.jumping) {
           legs[0].rotation.x = -0.4; legs[1].rotation.x = -0.6;
@@ -1952,7 +1603,6 @@
         player.userData.body.position.y = 0.55 + hopY;
         player.userData.head.position.y = 1.25 + hopY;
       }
-
       for (const seg of segments) {
         seg.position.z += effectiveSpeed * dt;
         if (seg.position.z > SEGMENT_LENGTH) {
@@ -1960,7 +1610,6 @@
           spawnObjectsAhead(seg.position.z + SEGMENT_LENGTH/2);
         }
       }
-
       for (let i = activeObjects.length - 1; i >= 0; i--) {
         const obj = activeObjects[i];
         obj.mesh.position.z += effectiveSpeed * dt;
@@ -1972,27 +1621,22 @@
           obj.mesh.position.y = Math.sin(state.runTime * 3 + obj.z) * 0.1;
         }
         if (obj.mesh.position.z > 8) {
-          scene.remove(obj.mesh);
-          activeObjects.splice(i, 1);
+          scene.remove(obj.mesh); activeObjects.splice(i, 1);
         }
       }
-
       checkCollision();
-
       camera.position.x += (player.position.x * 0.3 - camera.position.x) * 0.08;
-
       updateHUD();
     }
-
     renderer.render(scene, camera);
   }
 
   loadingEl.style.display = 'none';
   document.getElementById('hud').style.display = 'flex';
   document.getElementById('start-screen').classList.remove('hidden');
-
   requestAnimationFrame(animate);
 
+  // 캐릭터 선택
   document.querySelectorAll('.char-card').forEach(card => {
     card.addEventListener('click', () => {
       document.querySelectorAll('.char-card').forEach(c => c.classList.remove('selected'));
@@ -2005,35 +1649,40 @@
     });
   });
 
+  // 난이도 선택
+  document.querySelectorAll('.diff-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.diff-btn').forEach(b => b.classList.remove('selected'));
+      btn.classList.add('selected');
+      selectedDiff = btn.dataset.diff;
+      difficulty = DIFFICULTIES[selectedDiff];
+    });
+  });
+
   function startGame() {
-    // 초기화
     state.running = true;
     state.paused = false;
-    state.speed = 12;
-    state.lane = 1;
-    state.laneTarget = 1;
-    state.jumpVel = 0;
-    state.jumping = false;
-    state.sliding = false;
-    state.coins = 0;
-    state.score = 0;
-    state.multi = 1;
-    state.runTime = 0;
-    state.distance = 0;
-    state.goldRushTime = 0;
-    state.jumpCount = 0;
-    state.slideCount = 0;
+    state.speed = difficulty.baseSpeed;
+    state.targetSpeed = difficulty.baseSpeed;
+    state.maxSpeed = difficulty.maxSpeed;
+    state.lane = 1; state.laneTarget = 1;
+    state.jumpVel = 0; state.jumping = false; state.sliding = false;
+    state.coins = 0; state.score = 0; state.multi = 1;
+    state.runTime = 0; state.distance = 0; state.goldRushTime = 0;
+    state.jumpCount = 0; state.slideCount = 0;
     state.reachedStage = 1;
+    lastObstacleZ = -1000;
 
-    for (const k of ['magnet', 'shield', 'boost', 'x2']) powerupState[k] = 0;
+    for (const k of ['magnet','shield','boost','x2']) powerupState[k] = 0;
     updatePowerupUI();
 
-    // 스테이지 초기화
-    if (currentStage !== 0) {
-      transitionToStage(0);
-    }
+    if (currentStage !== 0) transitionToStage(0);
 
-    // 첫 미션 선택 (랜덤)
+    // 난이도 표시 업데이트
+    const dd = document.getElementById('diff-display');
+    dd.textContent = difficulty.name;
+    dd.className = 'diff-box ' + selectedDiff;
+
     missionIdx = Math.floor(Math.random() * MISSION_POOL.length) - 1;
     selectNextMission();
 
@@ -2043,9 +1692,7 @@
 
     for (const obj of activeObjects) scene.remove(obj.mesh);
     activeObjects.length = 0;
-    segments.forEach((seg, i) => {
-      seg.position.z = -i * SEGMENT_LENGTH + SEGMENT_LENGTH;
-    });
+    segments.forEach((seg, i) => { seg.position.z = -i * SEGMENT_LENGTH + SEGMENT_LENGTH; });
     for (let i = 2; i < SEGMENT_COUNT; i++) {
       spawnObjectsAhead(-i * SEGMENT_LENGTH + SEGMENT_LENGTH/2);
     }
@@ -2053,40 +1700,39 @@
     document.getElementById('start-screen').classList.add('hidden');
     document.getElementById('gameover').classList.remove('show');
     updateHUD();
-
-    // BGM 시작
     Audio.resume();
     Audio.startBGM(0);
   }
 
+  function backToMenu() {
+    state.running = false;
+    Audio.stopBGM();
+    document.getElementById('gameover').classList.remove('show');
+    document.getElementById('start-screen').classList.remove('hidden');
+    // 플레이어 제자리로
+    player.position.set(0, 0, 0);
+    player.scale.set(1, 1, 1);
+    player.rotation.set(0, 0, 0);
+  }
+
   document.getElementById('play-btn').addEventListener('click', startGame);
   document.getElementById('retry-btn').addEventListener('click', startGame);
+  document.getElementById('menu-btn').addEventListener('click', backToMenu);
   document.getElementById('pause-btn').addEventListener('click', () => {
     if (!state.running) return;
     state.paused = !state.paused;
     document.getElementById('pause-btn').textContent = state.paused ? '▶' : 'Ⅱ';
-    // 일시정지 시 BGM도 정지
-    if (state.paused) {
-      Audio.stopBGM();
-    } else {
-      Audio.startBGM(currentStage);
-    }
+    if (state.paused) Audio.stopBGM();
+    else Audio.startBGM(currentStage);
   });
-
-  // 사운드 토글
   document.getElementById('sound-btn').addEventListener('click', () => {
     Audio.setEnabled(!Audio.enabled);
     const btn = document.getElementById('sound-btn');
     if (Audio.enabled) {
-      btn.textContent = '🔊';
-      btn.classList.remove('muted');
-      if (state.running && !state.paused) {
-        Audio.resume();
-        Audio.startBGM(currentStage);
-      }
+      btn.textContent = '🔊'; btn.classList.remove('muted');
+      if (state.running && !state.paused) { Audio.resume(); Audio.startBGM(currentStage); }
     } else {
-      btn.textContent = '🔇';
-      btn.classList.add('muted');
+      btn.textContent = '🔇'; btn.classList.add('muted');
     }
   });
 
